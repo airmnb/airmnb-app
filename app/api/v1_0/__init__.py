@@ -20,5 +20,8 @@ def handle_invalid_usage(error):
 
 
 for i in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
-	mod_name = '.' + os.path.basename(i).split('.')[0]
+	basename = os.path.basename(i)
+	if basename.startswith('_'):
+		continue
+	mod_name = '.' + basename.split('.')[0]
 	importlib.import_module(mod_name, 'app.api.v1_0')
