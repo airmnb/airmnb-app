@@ -2,7 +2,7 @@
 
 export DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.db.elephantsql.com:5432/qstqzkzu
 export WECHAT_APP_ID=wxb945640b6fd4a85b
-export WECHAT_APP_SECRET=
+export WECHAT_APP_SECRET=0bfd52ef263ff701ddfc9b5217942d33
 
 FILE_DIR=$(dirname "${BASH_SOURCE}")
 
@@ -13,6 +13,8 @@ if [ -e "${LOCAL_ENV}" ]; then
 fi
 
 echo -e "\033[1;32mDATABASE_URI: \033[0;36m${DATABASE_URI}\033[0m"
+echo -e "\033[1;32mWECHAT_APP_ID: \033[0;36m${WECHAT_APP_ID}\033[0m"
+echo -e "\033[1;32mWECHAT_APP_SECRET: \033[0;36m${WECHAT_APP_SECRET}\033[0m"
 
 # load aliases for convenience
 ALIASES="${FILE_DIR}/.aliases"
