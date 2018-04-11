@@ -2,7 +2,7 @@
 
 export DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.db.elephantsql.com:5432/qstqzkzu
 export WECHAT_APP_ID=wxb945640b6fd4a85b
-export WECHAT_APP_SECRET=0bfd52ef263ff701ddfc9b5217942d33
+export WECHAT_APP_SECRET=dc5b64195b959e8126d569b5fb96e425
 
 FILE_DIR=$(dirname "${BASH_SOURCE}")
 
