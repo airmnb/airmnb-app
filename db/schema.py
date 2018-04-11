@@ -7,6 +7,10 @@ metadata = sa.MetaData()
 
 ##########################################################################
 
+t_wechat_users = sa.Table('wechatUsers', metadata,
+	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'userId', doc=''),
+	sa.Column('openid', pg.TEXT, nullable=False, key=u'openId', doc='')
+)
 
 t_users = sa.Table('users', metadata,
 	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'userId', doc=''),
