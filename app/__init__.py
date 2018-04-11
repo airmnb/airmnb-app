@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 
 import re
-import os
-import requests
-import json
 
 from flask import Flask, request, redirect, make_response, g
 
 from config import config
 from db import database as db
-
 
 def create_app(config_name):
 	app = Flask(__name__)
@@ -60,20 +56,4 @@ def create_app(config_name):
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
 
-	@app.route('/sso/wechat/login')
-	def wechat_login():
-		# https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html#wxloginobject
-		code = request.args['code']
-		app_id = os.environ['WECHAT_APP_ID']
-		secret = os.environ['WECHAT_APP_SECRET']
-		url = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type=authorization_code".format(app_id, secret, code)
-		response = requests.get(url)
-		if(response.ok):
-			jdata = json.loads(response.content)
-			print 'debug wechat response'
-			print jdata
-			if(jdata.errcode == 0):
-				return make_response(jdata.data.openid, 200, {'Content-Type': 'text/plain'})
-
-		return make_response(response, 400)
 	return app
