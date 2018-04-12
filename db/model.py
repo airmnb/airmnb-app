@@ -64,6 +64,13 @@ _names = set(locals().keys()) | {'_names'}
 #
 ##########################################################################
 
+class WechatUser(Base):
+	__table__ = t_wechat_users
+
+class WechatUserSchema(Schema):
+	class Meta:
+		fields = ('userId', 'openId', 'avartarUrl')
+
 
 # User
 class User(Base):
