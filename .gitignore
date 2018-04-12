@@ -3,5 +3,8 @@ venv*
 .*
 *~
 
+# local environment settings
+/env
+
 #setenv.sh
 #exclude.lst
