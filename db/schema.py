@@ -7,7 +7,7 @@ metadata = sa.MetaData()
 
 ##########################################################################
 
-t_wechat_users = sa.Table('wechatUsers', metadata,
+t_wechat_users = sa.Table('wechat_users', metadata,
 	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'userId', doc=''),
 	sa.Column('openid', pg.TEXT, nullable=False, key=u'openId', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
@@ -39,7 +39,7 @@ t_babies = sa.Table('babies', metadata,
 
 
 t_locations = sa.Table('locations', metadata,
-	sa.Column('id', pg.UUID, primary_key=True, autoincrement=True, key=u'locationId', doc=''),
+	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'locationId', doc=''),
 	sa.Column('langitude', pg.DOUBLE_PRECISION, nullable=False, key=u'langitude', doc=''),
 	sa.Column('latitude', pg.DOUBLE_PRECISION, nullable=False, key=u'latitude', doc=''),
 	sa.Column('addr1', pg.TEXT, nullable=False, key=u'addr1', doc=''),
