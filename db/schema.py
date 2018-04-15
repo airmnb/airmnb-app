@@ -8,34 +8,33 @@ metadata = sa.MetaData()
 ##########################################################################
 
 t_wechat_users = sa.Table('wechat_users', metadata,
-	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'userId', doc=''),
+	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'id', doc=''),
 	sa.Column('openid', pg.TEXT, nullable=False, key=u'openId', doc=''),
-	sa.Column('avartar_url', pg.TEXT, nullable=False, key=u'avartarUrl', doc=''),
+	sa.Column('avartar_url', pg.TEXT, nullable=True, key=u'avartarUrl', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 )
 
 t_users = sa.Table('users', metadata,
-	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'userId', doc=''),
-	sa.Column('family_name', pg.TEXT, nullable=False, key=u'familyName', doc=''),
-	sa.Column('given_name', pg.TEXT, nullable=False, key=u'givenName', doc=''),
-	sa.Column('gender', pg.TEXT, key=u'gender', doc=''),
-	sa.Column('dob', pg.DATE, nullable=False, key=u'dob', doc=''),
-	sa.Column('email', pg.TEXT, nullable=False, key=u'email', doc=''),
-	sa.Column('source_type', pg.TEXT, key=u'sourceType', doc=''),
-	sa.Column('avartar', pg.BYTEA, key=u'avartar', doc=''),
+	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'id', doc=''),
+	sa.Column('nick_name', pg.TEXT, nullable=True, key=u'nickName', doc=''),
+	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
+	sa.Column('given_name', pg.TEXT, nullable=True, key=u'givenName', doc=''),
+	sa.Column('full_name', pg.TEXT, nullable=True, key=u'fullName', doc=''),
+	sa.Column('gender', pg.TEXT, nullable=True, key=u'gender', doc=''),
+	sa.Column('dob', pg.DATE, nullable=True, key=u'dob', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 )
 
-
 t_babies = sa.Table('babies', metadata,
 	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'babyId', doc=''),
-	sa.Column('family_name', pg.TEXT, nullable=False, key=u'familyName', doc=''),
-	sa.Column('given_name', pg.TEXT, nullable=False, key=u'givenName', doc=''),
+	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
+	sa.Column('given_name', pg.TEXT, nullable=True, key=u'givenName', doc=''),
+	sa.Column('full_name', pg.TEXT, nullable=True, key=u'fullName', doc=''),
 	sa.Column('gender', pg.TEXT, key=u'gender', doc=''),
 	sa.Column('dob', pg.DATE, nullable=False, key=u'dob', doc=''),
 	sa.Column('parent_id', pg.UUID, nullable=False, key=u'parentId', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, key=u'createdAt', doc=''),
-	sa.ForeignKeyConstraint([u'parentId'], [u'users.userId']),
+	sa.ForeignKeyConstraint([u'parentId'], [u'users.id']),
 )
 
 

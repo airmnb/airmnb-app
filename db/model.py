@@ -64,12 +64,13 @@ _names = set(locals().keys()) | {'_names'}
 #
 ##########################################################################
 
+# WechatUser
 class WechatUser(Base):
 	__table__ = t_wechat_users
 
 class WechatUserSchema(Schema):
 	class Meta:
-		fields = ('userId', 'openId', 'avartarUrl')
+		fields = ('id', 'openId', 'avartarUrl', 'createdAt')
 
 
 # User
@@ -79,10 +80,10 @@ class User(Base):
 
 class UserSchema(Schema):
 	class Meta:
-		fields = ('userId', 'email', 'familyName', 'givenName', 'gender',
-			'dob', 'avartar', 'createdAt')
+		fields = ('id', 'nickName', 'familyName', 'givenName', 'fullName', 'gender',
+			'dob', 'createdAt')
 
-
+# Baby
 class Baby(Base):
 	__table__ = t_babies
 

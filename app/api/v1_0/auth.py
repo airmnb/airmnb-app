@@ -9,6 +9,7 @@ from . import api_1_0 as bp, InvalidUsage
 import os
 import requests
 import json
+import _helper as helper
 
 _name = __file__.split('/')[-1].split('.')[0]
 
@@ -28,7 +29,21 @@ def wechat_login():
 			if(not 'errcode' in jdata):
 				openid = jdata['openid']
 				# TOOD: Add logic to get_or_set AirMnb profile
-				users = m.User.query.order_by(m.User.createdAt).all()
-				return jsonify(users=m.User.dump(users))
+				wechat_user = m.WechatUser.query.filter(m.WechatUser.openId == openid).one_or_none()
+				if(wechat_user is None):
+					userid = str(helper.generate_new_uuid())
+					wechat_user = m.WechatUser(**{
+						'id': userid, 
+						'openId': openid,
+					})
+					user = m.User(**{
+						'id': userid,
+					})
+					SS.add(wechat_user)
+					SS.add(user)
+					SS.flush()
+				else:
+					user = m.User.query.filter(m.User.id == wechat_user.id).one()
+				return jsonify(user=m.User.dump(user))
 
-		return make_response('', 402)
+		return make_response('Bad request', 400)
