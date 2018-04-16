@@ -6,7 +6,7 @@ alias downgrade="python manage.py db downgrade"
 alias m="python manage.py"
 alias start="python manage.py runserver"
 
-LOG_ROOT=${LOG_ROOT?-/opt/local/var/log/apache2}
+LOG_ROOT=${LOG_ROOT:-/opt/local/var/log/apache2}
 
 alias app="cd ${FILE_DIR}"
 alias conf='cd /opt/local/etc/apache2/'
