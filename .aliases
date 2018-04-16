@@ -1,9 +1,19 @@
 #!/bin/bash
 
-alias db="psql ${DATABASE_URI}"
 alias migrate="python manage.py db migrate"
 alias upgrade="python manage.py db upgrade"
 alias downgrade="python manage.py db downgrade"
 alias m="python manage.py"
 alias start="python manage.py runserver"
 
+LOG_ROOT=${LOG_ROOT?-/opt/local/var/log/apache2}
+
+alias app="cd ${FILE_DIR}"
+alias conf='cd /opt/local/etc/apache2/'
+alias log='cd ${LOG_ROOT}'
+alias reload='sudo apachectl graceful'
+alias db='psql ${DATABASE_URI}'
+alias al='cat ${LOG_ROOT}/access_log'
+alias el='cat ${LOG_ROOT}/error_log'
+alias tal='tail -f ${LOG_ROOT}/access_log'
+alias tel='tail -f ${LOG_ROOT}/error_log'

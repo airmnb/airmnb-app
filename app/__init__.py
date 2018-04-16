@@ -45,6 +45,11 @@ def create_app(config_name):
 		return redirect(location='/')
 
 
+	@app.route('/')
+	def index():
+		return 'airmnb'
+
+
 	@app.route('/authorization_response')
 	def authorization_response():
 		original_url = request.args['r']

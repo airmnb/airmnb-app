@@ -66,7 +66,7 @@ def create_new_activity():
 @bp.route(_name + '/<activityId>', methods=['GET'])
 @api
 @caps()
-def get_activity():
+def get_activity(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
 		raise InvalidUsage(_('activity {0} not found').format(activityId), 404)
