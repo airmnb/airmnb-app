@@ -1,2 +1,0 @@
-GoDaddy ssl certificate
-
