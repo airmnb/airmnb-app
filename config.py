@@ -5,7 +5,7 @@ import os
 class Config:
 	SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
-	SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
+	# SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
 	SQLALCHEMY_DATABASE_URI = 'postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.db.elephantsql.com:5432/qstqzkzu'
 	LOG_LEVEL = logging.INFO
 
