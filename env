@@ -17,6 +17,3 @@ export GOOGLE_TOKEN_ENDPOINT=https://www.googleapis.com/oauth2/v4/token
 
 export WECHAT_APP_KEY=
 export WECHAT_APP_SECRET=
-
-export DATABASE_URI=postgresql://localhost/airmnb
-
