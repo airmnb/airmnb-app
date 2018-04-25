@@ -9,7 +9,10 @@
 Flask==0.12.2
 #Flask-Cors==3.0.3
 Flask-Migrate==2.1.1
-#Flask-OAuthlib==0.9.3
+Flask-OAuthlib==0.9.3
+	#oauthlib==2.0.7	# dependency of Flask-OAuthlib
+	#requests-oauthlib==0.8.0	# dependency of Flask-OAuthlib
+
 #Flask-RESTful==0.3.6
 Flask-Script==2.0.6
 Flask-SQLAlchemy==2.3.2
@@ -26,7 +29,6 @@ Flask-SQLAlchemy==2.3.2
 marshmallow==2.15.0
 
 #numpy==1.11.2
-#oauthlib==2.0.0
 #openpyxl==2.4.8
 #Pillow==3.4.1
 
@@ -34,13 +36,12 @@ psycopg2==2.7.4
 
 #py==1.4.34
 #pycrypto==2.6.1
-#PyJWT==1.4.2
+PyJWT==1.4.2
 #pytest==3.2.5
 #pytest-env==0.6.2
 
 #pytz==2016.4
 requests==2.9.1
-#requests-oauthlib==0.6.2
 
 SQLAlchemy==1.2.6
 #typing==3.5.2.2

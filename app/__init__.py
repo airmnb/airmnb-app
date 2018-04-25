@@ -3,11 +3,17 @@
 import os
 import re
 
-from flask import Flask, request, redirect, make_response, g, send_file
-#from flask_oauthlib.client import OAuth
+import sqlalchemy.orm.exc
+from flask import Flask, request, redirect, make_response, g, send_file, url_for
+from flask_oauthlib.client import OAuth
+import jwt
 
 from config import config
 from db import database as db
+from .i18n import get_text as _
+import db.model as m
+from db.db import SS
+
 
 def create_app(config_name):
 	app = Flask(__name__)
@@ -32,16 +38,17 @@ def create_app(config_name):
 	from app.api import api_1_0
 	app.register_blueprint(api_1_0, url_prefix='/api/1.0/')
 
-	# oauth = OAuth()
-	# soteria = oauth.remote_app('soteria',
-	# 	base_url=None,
-	# 	request_token_url=None,
-	# 	access_token_url=app.config['OAUTH2_TOKEN_ENDPOINT'],
-	# 	authorize_url=app.config['OAUTH2_AUTHORIZATION_ENDPOINT'],
-	# 	consumer_key=app.config['OAUTH2_CLIENT_ID'],
-	# 	consumer_secret=app.config['OAUTH2_CLIENT_SECRET'],
-	# 	request_token_params={'scope': 'user', 'state': 'blah'},
-	# )
+	oauth = OAuth()
+	# TODO: generate unique state
+	google = oauth.remote_app('google',
+		base_url=None,
+		request_token_url=None,
+		access_token_url=app.config['GOOGLE_TOKEN_ENDPOINT'],
+		authorize_url=app.config['GOOGLE_AUTHORIZATION_URL'],
+		consumer_key=app.config['GOOGLE_APP_KEY'],
+		consumer_secret=app.config['GOOGLE_APP_SECRET'],
+		request_token_params={'scope': 'openid email profile', 'state': 'blah'},
+	)
 
 
 	@app.before_request
@@ -55,14 +62,43 @@ def create_app(config_name):
 		return None
 
 
-	@app.route('/logout')
-	def logout():
-		return redirect(location='/')
-
-
 	@app.route('/')
 	def index():
 		return send_file('index.html', cache_timeout=0)
+
+
+	@app.route('/authorization_response')
+	def authorization_response():
+
+		# retrieve the access_token using code from authorization grant
+		try:
+			resp = google.authorized_response()
+		except Exception as e:
+			return make_response(_('error getting access token: {}').format(e), 500)
+
+		if resp is None:
+			return make_response(_('You need to grant access to continue, error: {}').format(
+				request.args.get('error')), 400)
+
+		data = jwt.decode(resp['id_token'], verify=False)
+		email = data['email']
+		try:
+			user = m.User.query.filter(m.User.email==email).one()
+		except sqlalchemy.orm.exc.NoResultFound as e:
+			# user does not exist, create it
+			user = m.User(
+				familyName=data['family_name'],
+				givenName=data['given_name'],
+				# gender
+				# dob
+				fullName=data['name'],
+				email=data['email'],
+			)
+			SS.add(user)
+			SS.commit()
+
+		# TODO: create jwt token for user
+		return redirect(location='/debug')
 
 
 	@app.route('/debug')
@@ -72,15 +108,23 @@ def create_app(config_name):
 			buf.append('{}\t{}\n'.format(k, v))
 		return make_response(('\n'.join(buf), {'Content-Type': 'text/plain'}))
 
-	@app.route('/authorization_response')
-	def authorization_response():
-		original_url = request.args['r']
-		response = redirect(location=original_url)
-		return response
-
 
 	@app.route('/health-check')
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
+
+
+	@app.route('/login')
+	def login():
+		callback = url_for('authorization_response', r=request.url, _external=True)
+		# TODO: setup google.request_token_params here to include redirection url here
+		callback = url_for('authorization_response', _external=True)
+		return google.authorize(callback=callback)
+
+
+	@app.route('/logout')
+	def logout():
+		return redirect(location='/')
+
 
 	return app

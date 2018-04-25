@@ -1,4 +1,6 @@
 
+import uuid
+
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
 
@@ -15,7 +17,9 @@ t_wechat_users = sa.Table('wechat_users', metadata,
 )
 
 t_users = sa.Table('users', metadata,
-	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False, key=u'id', doc=''),
+	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False,
+			default=lambda: str(uuid.uuid4()), key=u'id', doc=''),
+	sa.Column('email', pg.TEXT, nullable=True, key=u'email', doc=''),
 	sa.Column('nick_name', pg.TEXT, nullable=True, key=u'nickName', doc=''),
 	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
 	sa.Column('given_name', pg.TEXT, nullable=True, key=u'givenName', doc=''),
