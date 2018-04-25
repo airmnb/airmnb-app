@@ -21,7 +21,7 @@ Please follow the instructions in https://virtualenv.pypa.io/en/stable/installat
 ```
 $ git clone https://github.com/airmnb/airmnb-app
 
-$ cd airmnb-python-backend
+$ cd airmnb-app
 
 $ virtualenv venv
 
