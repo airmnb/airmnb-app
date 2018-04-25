@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import re
 
-from flask import Flask, request, redirect, make_response, g
+from flask import Flask, request, redirect, make_response, g, send_file
+#from flask_oauthlib.client import OAuth
 
 from config import config
 from db import database as db
@@ -16,7 +18,9 @@ def create_app(config_name):
 	public_url_patterns = map(re.compile, [
 		'/static/',
 		'/favicon.ico',
+		'/login',
 		'/logout',
+		'/debug',
 		'/authorization_response',
 		'/health-check',
 	])
@@ -27,6 +31,17 @@ def create_app(config_name):
 
 	from app.api import api_1_0
 	app.register_blueprint(api_1_0, url_prefix='/api/1.0/')
+
+	# oauth = OAuth()
+	# soteria = oauth.remote_app('soteria',
+	# 	base_url=None,
+	# 	request_token_url=None,
+	# 	access_token_url=app.config['OAUTH2_TOKEN_ENDPOINT'],
+	# 	authorize_url=app.config['OAUTH2_AUTHORIZATION_ENDPOINT'],
+	# 	consumer_key=app.config['OAUTH2_CLIENT_ID'],
+	# 	consumer_secret=app.config['OAUTH2_CLIENT_SECRET'],
+	# 	request_token_params={'scope': 'user', 'state': 'blah'},
+	# )
 
 
 	@app.before_request
@@ -47,8 +62,15 @@ def create_app(config_name):
 
 	@app.route('/')
 	def index():
-		return 'airmnb'
+		return send_file('index.html', cache_timeout=0)
 
+
+	@app.route('/debug')
+	def debug():
+		buf = []
+		for k, v in sorted(os.environ.iteritems()):
+			buf.append('{}\t{}\n'.format(k, v))
+		return make_response(('\n'.join(buf), {'Content-Type': 'text/plain'}))
 
 	@app.route('/authorization_response')
 	def authorization_response():

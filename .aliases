@@ -12,8 +12,9 @@ alias app="cd ${FILE_DIR}"
 alias conf='cd /opt/local/etc/apache2/'
 alias log='cd ${LOG_ROOT}'
 alias reload='sudo apachectl graceful'
-alias db='psql ${DATABASE_URI}'
 alias al='cat ${LOG_ROOT}/access_log'
 alias el='cat ${LOG_ROOT}/error_log'
 alias tal='tail -f ${LOG_ROOT}/access_log'
 alias tel='tail -f ${LOG_ROOT}/error_log'
+
+alias db='psql ${DATABASE_URI}'
