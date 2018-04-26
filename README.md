@@ -41,15 +41,15 @@ createdb airmmb
 
 #### Setup db uri
 
-Edit setenv.sh, set the ```DATABASE_URI``` to following value
+Edit setenv.sh, set the ```AMB_DATABASE_URI``` to following value
 
 ```
-export DATABASE_URI=postgresql://localhost/airmnb
+export AMB_DATABASE_URI=postgresql://localhost/airmnb
 ```
 
 A more general pattern will be:
 ```
-export DATABASE_URI=postgresql://username:password@hostname:port/database_name
+export AMB_DATABASE_URI=postgresql://username:password@hostname:port/database_name
 ```
 
 After you have updated setenv.sh, load it into current environment:
@@ -59,7 +59,7 @@ source setenv.sh
 
 Then you can verify it by running:
 ```
-psql ${DATABASE_URI}
+psql ${AMB_DATABASE_URI}
 ```
 This should open psql and connect to the database you created. Then enter ```\q``` to quit.
 
@@ -120,7 +120,7 @@ If users table is empty, you will get an empty list:
 
 You can add a user into users table and try this api again, it should return the user you just created, for example:
 ```
-echo "insert into users values ('e0a5d16c-3bed-11e8-b467-0ed5f89f718b', 'John', 'Smith', 'male', '1970-01-01', 'jsmith@company.com', 'unknown', NULL, now());" | psql ${DATABASE_URI}
+echo "insert into users values ('e0a5d16c-3bed-11e8-b467-0ed5f89f718b', 'John', 'Smith', 'male', '1970-01-01', 'jsmith@company.com', 'unknown', NULL, now());" | psql ${AMB_DATABASE_URI}
 ```
 Then you will get:
 ```

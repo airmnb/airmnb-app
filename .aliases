@@ -26,4 +26,4 @@ alias el='cat ${LOG_ROOT}/error_log'
 alias tal='tail -f ${LOG_ROOT}/access_log'
 alias tel='tail -f ${LOG_ROOT}/error_log'
 
-alias db='psql ${DATABASE_URI}'
+alias db='psql ${AMB_DATABASE_URI}'

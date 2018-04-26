@@ -1,5 +1,5 @@
-export DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.db.elephantsql.com:5432/qstqzkzu
-
+export AMB_DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.db.elephantsql.com:5432/qstqzkzu
+export AMB_DOMAIN_NAME=www.airmombaby.com
 
 ###
 # doc
@@ -7,13 +7,13 @@ export DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.
 # 
 # obtain client credentials: [Google API Console](https://console.developers.google.com/)
 #
-export FACEBOOK_APP_KEY=
-export FACEBOOK_APP_SECRET=
+export AMB_FACEBOOK_APP_KEY=
+export AMB_FACEBOOK_APP_SECRET=
 
-export GOOGLE_APP_KEY=372339553651.apps.googleusercontent.com
-export GOOGLE_APP_SECRET=yZjP1B_oofR451Nee8zOefcr
-export GOOGLE_AUTHORIZATION_URL=https://accounts.google.com/o/oauth2/v2/auth
-export GOOGLE_TOKEN_ENDPOINT=https://www.googleapis.com/oauth2/v4/token
+export AMB_GOOGLE_APP_KEY=372339553651.apps.googleusercontent.com
+export AMB_GOOGLE_APP_SECRET=yZjP1B_oofR451Nee8zOefcr
+export AMB_GOOGLE_AUTHORIZATION_URL=https://accounts.google.com/o/oauth2/v2/auth
+export AMB_GOOGLE_TOKEN_ENDPOINT=https://www.googleapis.com/oauth2/v4/token
 
-export WECHAT_APP_KEY=
-export WECHAT_APP_SECRET=
+export AMB_WECHAT_APP_KEY=
+export AMB_WECHAT_APP_SECRET=
