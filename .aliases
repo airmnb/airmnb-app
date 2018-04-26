@@ -1,10 +1,19 @@
 #!/bin/bash
 
-alias migrate="python manage.py db migrate"
-alias upgrade="python manage.py db upgrade"
-alias downgrade="python manage.py db downgrade"
-alias m="python manage.py"
-alias start="python manage.py runserver"
+alias migrate="python3 manage.py db migrate"
+alias upgrade="python3 manage.py db upgrade"
+alias downgrade="python3 manage.py db downgrade"
+alias m="python3 manage.py"
+alias start="python3 manage.py runserver"
+alias build="pip3 install -r requirements.txt && \
+if cd web; then git pull; else git clone --depth 1 --progress -b master https://github.com/airmnb/airmnb-web.git web; fi && \
+npm install && \
+npm run build && \
+cd - && \
+ln -sf ${PWD}/web/build/index.html ${PWD}/app/index.html && \
+ln -sf ${PWD}/web/build/service-worker.js ${PWD}/app/service-worker.js && \
+ln -sf ${PWD}/web/build/static ${PWD}/app/static \
+"
 
 LOG_ROOT=${LOG_ROOT:-/opt/local/var/log/apache2}
 

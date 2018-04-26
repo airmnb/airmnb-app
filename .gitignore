@@ -3,8 +3,12 @@ venv*
 .*
 *~
 
-# local environment settings
-/env
+setenv.sh
+web/
+app/index.html
+app/service-worker.js
+app/static
 
-#setenv.sh
+# local environment settings
+
 #exclude.lst
