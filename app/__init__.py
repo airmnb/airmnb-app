@@ -61,12 +61,6 @@ def create_app(config_name):
 		g.current_user = object()
 		return None
 
-
-	@app.route('/')
-	def index():
-		return send_file('index.html', cache_timeout=0)
-
-
 	@app.route('/authorization_response')
 	def authorization_response():
 
@@ -126,5 +120,9 @@ def create_app(config_name):
 	def logout():
 		return redirect(location='/')
 
+	@app.route('/', defaults={'path': ''})
+	@app.route('/<path:path>')
+	def catch_all(path):
+		return send_file('index.html', cache_timeout=0)
 
 	return app
