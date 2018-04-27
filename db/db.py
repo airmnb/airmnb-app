@@ -8,7 +8,7 @@ from . import database, mode
 if mode == 'app':
 	SS = database.session
 else:
-	engine = create_engine(config['development'].SQLALCHEMY_DATABASE_URI)
+	engine = create_engine(config['development'].SQLALCHEMY_AMB_DATABASE_URI)
 	SS = scoped_session(sessionmaker(bind=engine))
 
 __all__ = ['SS']

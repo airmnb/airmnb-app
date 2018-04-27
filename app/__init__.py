@@ -48,20 +48,20 @@ def create_app(config_name):
 	google = oauth.remote_app('google',
 		base_url=None,
 		request_token_url=None,
-		access_token_url=app.config['GOOGLE_ACCESS_TOKEN_URL'],
-		authorize_url=app.config['GOOGLE_AUTHORIZE_URL'],
-		consumer_key=app.config['GOOGLE_APP_KEY'],
-		consumer_secret=app.config['GOOGLE_APP_SECRET'],
+		access_token_url=app.config['AMB_GOOGLE_TOKEN_ENDPOINT'],
+		authorize_url=app.config['AMB_GOOGLE_AUTHORIZATION_URL'],
+		consumer_key=app.config['AMB_GOOGLE_APP_KEY'],
+		consumer_secret=app.config['AMB_GOOGLE_APP_SECRET'],
 		request_token_params={'scope': 'openid email profile', 'state': 'google'},
 	)
 
 	facebook = oauth.remote_app('facebook',
 		base_url='https://graph.facebook.com/',
 		request_token_url=None,
-		access_token_url=app.config['FACEBOOK_ACCESS_TOKEN_URL'],
-		authorize_url=app.config['FACEBOOK_AUTHORIZE_URL'],
-		consumer_key=app.config['FACEBOOK_APP_KEY'],
-		consumer_secret=app.config['FACEBOOK_APP_SECRET'],
+		access_token_url=app.config['AMB_FACEBOOK_ACCESS_TOKEN_URL'],
+		authorize_url=app.config['AMB_FACEBOOK_AUTHORIZE_URL'],
+		consumer_key=app.config['AMB_FACEBOOK_APP_KEY'],
+		consumer_secret=app.config['AMB_FACEBOOK_APP_SECRET'],
 		request_token_params={'scope': 'email', 'state': 'facebook'}
 	)
 
@@ -74,12 +74,6 @@ def create_app(config_name):
 		# if authenticated, set g.current_user and return None
 		g.current_user = object()
 		return None
-
-
-	@app.route('/')
-	def index():
-		return send_file('index.html', cache_timeout=0)
-
 
 	@app.route('/authorization_response')
 	def authorization_response():
@@ -151,7 +145,7 @@ def create_app(config_name):
 		buf = []
 		for k, v in sorted(os.environ.items()):
 			buf.append('{}\t{}\n'.format(k, v))
-		return make_response(('\n'.join(buf), {'Content-Type': 'text/plain'}))
+		return make_response(('\n'.join(buf), {'Content-Type': 'application/json'}))
 
 
 	@app.route('/health-check')
@@ -180,5 +174,9 @@ def create_app(config_name):
 	def logout():
 		return redirect(location='/')
 
+	@app.route('/', defaults={'path': ''})
+	@app.route('/<path:path>')
+	def catch_all(path):
+		return send_file('index.html', cache_timeout=0)
 
 	return app
