@@ -2,10 +2,12 @@
 
 import os
 import re
+import logging
 
 import sqlalchemy.orm.exc
 from flask import Flask, request, redirect, make_response, g, send_file, url_for
 from flask_oauthlib.client import OAuth
+import requests
 import jwt
 
 from config import config
@@ -14,6 +16,8 @@ from .i18n import get_text as _
 import db.model as m
 from db.db import SS
 
+
+log = logging.getLogger('app')
 
 def create_app(config_name):
 	app = Flask(__name__)
@@ -39,17 +43,27 @@ def create_app(config_name):
 	app.register_blueprint(api_1_0, url_prefix='/api/1.0/')
 
 	oauth = OAuth()
-	# TODO: generate unique state
+
+
 	google = oauth.remote_app('google',
 		base_url=None,
 		request_token_url=None,
-		access_token_url=app.config['GOOGLE_TOKEN_ENDPOINT'],
-		authorize_url=app.config['GOOGLE_AUTHORIZATION_URL'],
+		access_token_url=app.config['GOOGLE_ACCESS_TOKEN_URL'],
+		authorize_url=app.config['GOOGLE_AUTHORIZE_URL'],
 		consumer_key=app.config['GOOGLE_APP_KEY'],
 		consumer_secret=app.config['GOOGLE_APP_SECRET'],
-		request_token_params={'scope': 'openid email profile', 'state': 'blah'},
+		request_token_params={'scope': 'openid email profile', 'state': 'google'},
 	)
 
+	facebook = oauth.remote_app('facebook',
+		base_url='https://graph.facebook.com/',
+		request_token_url=None,
+		access_token_url=app.config['FACEBOOK_ACCESS_TOKEN_URL'],
+		authorize_url=app.config['FACEBOOK_AUTHORIZE_URL'],
+		consumer_key=app.config['FACEBOOK_APP_KEY'],
+		consumer_secret=app.config['FACEBOOK_APP_SECRET'],
+		request_token_params={'scope': 'email', 'state': 'facebook'}
+	)
 
 	@app.before_request
 	def authenticate_request():
@@ -69,10 +83,16 @@ def create_app(config_name):
 
 	@app.route('/authorization_response')
 	def authorization_response():
+		state = request.args.get('state', '')
+		if state.find('google') >= 0:
+			provider = google
+		elif state.find('facebook') >= 0:
+			provider = facebook
 
 		# retrieve the access_token using code from authorization grant
 		try:
-			resp = google.authorized_response()
+			print('retrieve access_token using authorization code')
+			resp = provider.authorized_response()
 		except Exception as e:
 			return make_response(_('error getting access token: {}').format(e), 500)
 
@@ -80,22 +100,47 @@ def create_app(config_name):
 			return make_response(_('You need to grant access to continue, error: {}').format(
 				request.args.get('error')), 400)
 
-		data = jwt.decode(resp['id_token'], verify=False)
-		email = data['email']
-		try:
-			user = m.User.query.filter(m.User.email==email).one()
-		except sqlalchemy.orm.exc.NoResultFound as e:
-			# user does not exist, create it
-			user = m.User(
-				familyName=data['family_name'],
-				givenName=data['given_name'],
-				# gender
-				# dob
-				fullName=data['name'],
-				email=data['email'],
-			)
-			SS.add(user)
-			SS.commit()
+		if provider == google:
+			data = jwt.decode(resp['id_token'], verify=False)
+			email = data['email']
+			try:
+				user = m.User.query.filter(m.User.email==email).one()
+			except sqlalchemy.orm.exc.NoResultFound as e:
+				# user does not exist, create it
+				user = m.User(
+					familyName=data['family_name'],
+					givenName=data['given_name'],
+					# gender
+					# dob
+					fullName=data['name'],
+					email=data['email'],
+				)
+				SS.add(user)
+				SS.commit()
+		elif provider == facebook:
+			token = resp['access_token']
+			try:
+				data = requests.get('https://graph.facebook.com/me',
+					params={'fields': ','.join(['id', 'email', 'age_range', 'first_name', 'last_name', 'gender', 'verified', 'name'])},
+					headers={
+						'Authorization': 'Bearer {}'.format(token)
+					}).json()
+			except Exception as e:
+				print (e)
+				pass
+			print('data is', data)
+			email = data['email']
+			try:
+				user = m.User.query.filter(m.User.email==email).one()
+			except sqlalchemy.orm.exc.NoResultFound as e:
+				user = m.User(
+					familyName=data['last_name'],
+					givenName=data['first_name'],
+					fullName=data['name'],
+					email=data['email'],
+				)
+				SS.add(user)
+				SS.commit()
 
 		# TODO: create jwt token for user
 		return redirect(location='/debug')
@@ -104,7 +149,7 @@ def create_app(config_name):
 	@app.route('/debug')
 	def debug():
 		buf = []
-		for k, v in sorted(os.environ.iteritems()):
+		for k, v in sorted(os.environ.items()):
 			buf.append('{}\t{}\n'.format(k, v))
 		return make_response(('\n'.join(buf), {'Content-Type': 'text/plain'}))
 
@@ -116,10 +161,19 @@ def create_app(config_name):
 
 	@app.route('/login')
 	def login():
-		callback = url_for('authorization_response', r=request.url, _external=True)
-		# TODO: setup google.request_token_params here to include redirection url here
-		callback = url_for('authorization_response', _external=True)
-		return google.authorize(callback=callback)
+		identity_provider = request.args.get('use', '')
+
+		if identity_provider == 'google':
+			log.debug('login with google')
+			callback = url_for('authorization_response', r=request.url, _external=True)
+			# TODO: setup google.request_token_params here to include redirection url here
+			callback = url_for('authorization_response', _external=True)
+			return google.authorize(callback=callback)
+		elif identity_provider == 'facebook':
+			log.debug('loging with facebook')
+			callback = url_for('authorization_response', _external=True)
+			return facebook.authorize(callback=callback)
+		return 'you are logged in'
 
 
 	@app.route('/logout')

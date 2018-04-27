@@ -9,11 +9,13 @@ export DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.
 #
 export FACEBOOK_APP_KEY=
 export FACEBOOK_APP_SECRET=
+export FACEBOOK_AUTHORIZE_URL=https://www.facebook.com/dialog/oauth
+export FACEBOOK_ACCESS_TOKEN_URL=/oauth/access_token
 
-export GOOGLE_APP_KEY=372339553651.apps.googleusercontent.com
-export GOOGLE_APP_SECRET=yZjP1B_oofR451Nee8zOefcr
-export GOOGLE_AUTHORIZATION_URL=https://accounts.google.com/o/oauth2/v2/auth
-export GOOGLE_TOKEN_ENDPOINT=https://www.googleapis.com/oauth2/v4/token
+export GOOGLE_APP_KEY=
+export GOOGLE_APP_SECRET=
+export GOOGLE_AUTHORIZE_URL=https://accounts.google.com/o/oauth2/v2/auth
+export GOOGLE_ACCESS_TOKEN_URL=https://www.googleapis.com/oauth2/v4/token
 
 export WECHAT_APP_KEY=
 export WECHAT_APP_SECRET=
