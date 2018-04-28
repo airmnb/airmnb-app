@@ -25,20 +25,20 @@ def create_app(config_name):
 	config[config_name].init_app(app)
 	db.init_app(app)
 
-	public_url_patterns = map(re.compile, [
+	public_url_patterns = list(map(re.compile, [
 		'/static/',
-		'/favicon.ico',
-		'/login',
-		'/logout',
-		'/debug',
-		'/authorization_response',
-		'/health-check',
-		'/',
-	])
-	json_url_patterns = map(re.compile, [
-		'/whoami',
-		'/api'
-	])
+		'/favicon.ico$',
+		'/login$',
+		'/logout$',
+		'/debug$',
+		'/authorization_response$',
+		'/health-check$',
+		'/$',
+	]))
+	json_url_patterns = list(map(re.compile, [
+		'/whoami$',
+		'/api/'
+	]))
 
 
 	from app.api import api_1_0
@@ -70,18 +70,13 @@ def create_app(config_name):
 
 	@app.before_request
 	def authenticate_request():
-		print('.'*20, request.path)
-
-		for p in public_url_patterns:
-			print('trying {}'.format(p.pattern))
+		for i, p in enumerate(public_url_patterns):
 			if p.match(request.path):
-				print('matched!->{}'.format(request.path))
 				return None
 
 		try:
 			if 'authoization' not in request.headers:
 				raise RuntimeError('Authorization header not found for non-public url: {}'.format(request.path))
-			print('auth_header is ->{}<-'.format(auth_header))
 			if not auth_header.startswith('Bearer '):
 				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
 			token = auth_header[7:]
@@ -95,6 +90,12 @@ def create_app(config_name):
 			if expires < now:
 				# session expires
 				raise ValueError('session expired at {}, now {}'.format(expires, now))
+			user = m.User.query.get(m.User.userId==userId)
+			if user:
+				# authentication succeeded
+				g.current_user = user
+				return None
+
 		except Exception as e:
 			# authentication failed
 			print('authentication failed: {}'.format(e))
@@ -102,11 +103,25 @@ def create_app(config_name):
 			if request.path == '/whoami':
 				# create a new session
 				print('requesting /whoami but authentication failed, about to create a new one');
-				pass
+				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)
+				ses = m.Session(sessionExpiresAt=three_days_later)
+				SS.add(ses)
+				SS.commit()
+				return make_response(jsonify(session=m.Session.dump(ses)),
+					401, {'Content-Type': 'application/json'})
 
-		# if authenticated, set g.current_user and return None
-		g.current_user = object()
-		return None
+		is_json = False
+		for p in json_url_patterns:
+			if p.match(request.path):
+				is_json = True
+			break
+		else:
+			is_json = (request.headers.get('HTTP-ACCEPT') or '').find('application/json') >= 0
+
+		if is_json:
+			return make_response(jsonify(error='authentication required to access requested url'), 
+				401, {'Content-Type': 'application/json'})
+		return redirect(location='/#/login')
 
 	@app.route('/authorization_response')
 	def authorization_response():
@@ -118,7 +133,6 @@ def create_app(config_name):
 
 		# retrieve the access_token using code from authorization grant
 		try:
-			print('retrieve access_token using authorization code')
 			resp = provider.authorized_response()
 		except Exception as e:
 			return make_response(_('error getting access token: {}').format(e), 500)
@@ -148,7 +162,8 @@ def create_app(config_name):
 			token = resp['access_token']
 			try:
 				data = requests.get('https://graph.facebook.com/me',
-					params={'fields': ','.join(['id', 'email', 'age_range', 'first_name', 'last_name', 'gender', 'verified', 'name'])},
+					params={'fields': ','.join(['id', 'email', 'age_range', 'first_name',
+							'last_name', 'gender', 'verified', 'name'])},
 					headers={
 						'Authorization': 'Bearer {}'.format(token)
 					}).json()
@@ -205,6 +220,7 @@ def create_app(config_name):
 
 	@app.route('/logout')
 	def logout():
+
 		return redirect(location='/')
 
 	@app.route('/whoami')
