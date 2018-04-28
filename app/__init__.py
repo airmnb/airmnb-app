@@ -193,7 +193,7 @@ def create_app(config_name):
 		buf = []
 		for k, v in sorted(os.environ.items()):
 			buf.append('{}\t{}\n'.format(k, v))
-		return make_response(('\n'.join(buf), {'Content-Type': 'application/json'}))
+		return make_response(('\n'.join(buf), {'Content-Type': 'text/plain'}))
 
 
 	@app.route('/health-check')
