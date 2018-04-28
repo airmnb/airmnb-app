@@ -28,6 +28,7 @@ def create_app(config_name):
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
 		'/favicon.ico$',
+		'/dashboard$',
 		'/login$',
 		'/logout$',
 		'/debug$',
