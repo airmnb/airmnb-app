@@ -185,7 +185,14 @@ def create_app(config_name):
 				SS.commit()
 
 		# TODO: create jwt token for user
-		return redirect(location='/debug')
+		return redirect(location='/dashboard')
+
+
+	@app.route('/dashboard')
+	def dashboard():
+		if g.current_user:
+			return 'Welcome {}'.format(g.current_user.userId)
+		return 'You are not logged in'
 
 
 	@app.route('/debug')
@@ -193,7 +200,7 @@ def create_app(config_name):
 		buf = []
 		for k, v in sorted(os.environ.items()):
 			buf.append('{}\t{}\n'.format(k, v))
-		return make_response(('\n'.join(buf), {'Content-Type': 'text/plain'}))
+		return make_response('\n'.join(buf), 200, {'Content-Type': 'text/plain'})
 
 
 	@app.route('/health-check')
@@ -204,18 +211,15 @@ def create_app(config_name):
 	@app.route('/login')
 	def login():
 		identity_provider = request.args.get('use', '')
-
 		if identity_provider == 'google':
 			log.debug('login with google')
-			callback = url_for('authorization_response', r=request.url, _external=True)
-			# TODO: setup google.request_token_params here to include redirection url here
 			callback = url_for('authorization_response', _external=True)
 			return google.authorize(callback=callback)
 		elif identity_provider == 'facebook':
 			log.debug('loging with facebook')
 			callback = url_for('authorization_response', _external=True)
 			return facebook.authorize(callback=callback)
-		return 'you are logged in'
+		return 'login using system database'
 
 
 	@app.route('/logout')
