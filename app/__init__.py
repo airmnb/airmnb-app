@@ -3,9 +3,10 @@
 import os
 import re
 import logging
+import datetime
 
 import sqlalchemy.orm.exc
-from flask import Flask, request, redirect, make_response, g, send_file, url_for
+from flask import Flask, request, redirect, make_response, g, send_file, url_for, jsonify
 from flask_oauthlib.client import OAuth
 import requests
 import jwt
@@ -15,7 +16,6 @@ from db import database as db
 from .i18n import get_text as _
 import db.model as m
 from db.db import SS
-
 
 log = logging.getLogger('app')
 
@@ -33,11 +33,13 @@ def create_app(config_name):
 		'/debug',
 		'/authorization_response',
 		'/health-check',
+		'/',
 	])
 	json_url_patterns = map(re.compile, [
 		'/whoami',
 		'/api'
 	])
+
 
 	from app.api import api_1_0
 	app.register_blueprint(api_1_0, url_prefix='/api/1.0/')
@@ -65,12 +67,43 @@ def create_app(config_name):
 		request_token_params={'scope': 'email', 'state': 'facebook'}
 	)
 
+
 	@app.before_request
 	def authenticate_request():
+		print('.'*20, request.path)
+
 		for p in public_url_patterns:
+			print('trying {}'.format(p.pattern))
 			if p.match(request.path):
+				print('matched!->{}'.format(request.path))
 				return None
-		# TODO: authenticate incoming request
+
+		try:
+			if 'authoization' not in request.headers:
+				raise RuntimeError('Authorization header not found for non-public url: {}'.format(request.path))
+			print('auth_header is ->{}<-'.format(auth_header))
+			if not auth_header.startswith('Bearer '):
+				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
+			token = auth_header[7:]
+			try:
+				payload = jwt.decode(token, os.environ.get('SECRET') or '')
+				userId = payload['userId']
+				expires = datetime.datetime.strpfmt(payload['expires'], '%Y-%m-%dT%H:%M:%S%z')
+			except:
+				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
+			now = datetime.datetime.now()
+			if expires < now:
+				# session expires
+				raise ValueError('session expired at {}, now {}'.format(expires, now))
+		except Exception as e:
+			# authentication failed
+			print('authentication failed: {}'.format(e))
+			print('request.path', request.path)
+			if request.path == '/whoami':
+				# create a new session
+				print('requesting /whoami but authentication failed, about to create a new one');
+				pass
+
 		# if authenticated, set g.current_user and return None
 		g.current_user = object()
 		return None
@@ -173,6 +206,10 @@ def create_app(config_name):
 	@app.route('/logout')
 	def logout():
 		return redirect(location='/')
+
+	@app.route('/whoami')
+	def whoami():
+		return jsonify(sessionId='123', accessToken='access', refreshToken='refresh', userId='unknown')
 
 	@app.route('/', defaults={'path': ''})
 	@app.route('/<path:path>')

@@ -5,6 +5,20 @@ export AMB_WECHAT_APP_SECRET=dc5b64195b959e8126d569b5fb96e425
 # For non China
 export AMB_DOMAIN_NAME=www.airmombaby.com
 
+export AMB_FACEBOOK_APP_KEY=100732940275183
+export AMB_FACEBOOK_APP_SECRET=d3cec74fd9e331fed0d22ef9c00b93dc
+export AMB_FACEBOOK_AUTHORIZE_URL=https://www.facebook.com/dialog/oauth
+export AMB_FACEBOOK_ACCESS_TOKEN_URL=/oauth/access_token
+
+export AMB_GOOGLE_APP_KEY=372339553651.apps.googleusercontent.com
+export AMB_GOOGLE_APP_SECRET=yZjP1B_oofR451Nee8zOefcr
+export AMB_GOOGLE_AUTHORIZE_URL=https://accounts.google.com/o/oauth2/v2/auth
+export AMB_GOOGLE_ACCESS_TOKEN_URL=https://www.googleapis.com/oauth2/v4/token
+
+export AMB_WECHAT_APP_KEY=
+export AMB_WECHAT_APP_SECRET=
+
+
 # # For China
 # export AMB_DOMAIN_NAME=www.airmnb.com
 

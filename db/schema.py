@@ -18,7 +18,7 @@ t_wechat_users = sa.Table('wechat_users', metadata,
 
 t_users = sa.Table('users', metadata,
 	sa.Column('id', pg.UUID, primary_key=True, autoincrement=False,
-			default=lambda: str(uuid.uuid4()), key=u'id', doc=''),
+			default=lambda: str(uuid.uuid4()), key=u'userId', doc=''),
 	sa.Column('email', pg.TEXT, nullable=True, key=u'email', doc=''),
 	sa.Column('nick_name', pg.TEXT, nullable=True, key=u'nickName', doc=''),
 	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
@@ -38,7 +38,7 @@ t_babies = sa.Table('babies', metadata,
 	sa.Column('dob', pg.DATE, nullable=False, key=u'dob', doc=''),
 	sa.Column('parent_id', pg.UUID, nullable=False, key=u'parentId', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, key=u'createdAt', doc=''),
-	sa.ForeignKeyConstraint([u'parentId'], [u'users.id']),
+	sa.ForeignKeyConstraint([u'parentId'], [u'users.userId']),
 )
 
 
@@ -62,6 +62,18 @@ t_activities = sa.Table('activities', metadata,
 	sa.Column('description', pg.TEXT, key=u'description', doc=''),
 	sa.Column('location_id', pg.UUID, nullable=False, key=u'locationId', doc=''),
 	sa.ForeignKeyConstraint([u'locationId'], [u'locations.locationId']),
+)
+
+
+t_sessions = sa.Table('sessions', metadata,
+	sa.Column('id', pg.UUID, primary_key=True, server_default=sa.text('uuid_generate_v4()'), key=u'sessionId', doc=''),
+	sa.Column('session_expires_at', pg.TIMESTAMP(timezone=True), nullable=False, key=u'sessionExpiresAt', doc=''),
+	sa.Column('user_id', pg.UUID, key=u'userId', doc=''),
+	sa.Column('access_token', pg.TEXT, key=u'accessToken', doc=''),
+	sa.Column('access_token_expires_at', pg.TIMESTAMP(timezone=True), key=u'accessTokenExpiresAt', doc=''),
+	sa.Column('refresh_token', pg.TEXT, key=u'refreshToken', doc=''),
+	# TODo: add more fields in session
+	sa.ForeignKeyConstraint([u'userId'], [u'users.userId']),
 )
 
 

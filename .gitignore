@@ -8,6 +8,7 @@ web/
 app/index.html
 app/service-worker.js
 app/static
+/env
 
 # local environment settings
 

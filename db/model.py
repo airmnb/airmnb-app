@@ -114,6 +114,16 @@ class ActivitySchema(Schema):
 		fields = ('activityId', 'name', 'description', 'location')
 
 
+class Session(Base):
+	__table__ = t_sessions
+	user = relationship(User)
+
+
+class SessionSchema(Schema):
+	class Meta:
+		fields = ('sessionId', 'userId', 'accessToken', 'refreshToken')
+
+
 ##########################################################################
 #
 # Define model class and its schema (if needed) above
