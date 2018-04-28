@@ -191,7 +191,7 @@ def create_app(config_name):
 
 	@app.route('/dashboard')
 	def dashboard():
-		if g.current_user:
+		if getattr(g, 'current_user', None):
 			return 'Welcome {}'.format(g.current_user.userId)
 		return 'You are not logged in'
 
