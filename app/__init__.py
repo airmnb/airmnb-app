@@ -186,7 +186,7 @@ def create_app(config_name):
 				SS.commit()
 
 		# TODO: create jwt token for user
-		return redirect(location='/dashboard')
+		return redirect(location='/dashboard', _external=True)
 
 
 	@app.route('/dashboard')
