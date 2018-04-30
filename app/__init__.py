@@ -4,6 +4,8 @@ import os
 import re
 import logging
 import datetime
+import json
+import urllib
 
 import sqlalchemy.orm.exc
 from flask import Flask, request, redirect, make_response, g, send_file, url_for, jsonify
@@ -48,6 +50,8 @@ def create_app(config_name):
 	oauth = OAuth()
 
 
+	state_dict = {}	# to be propulated by login handler
+
 	google = oauth.remote_app('google',
 		base_url=None,
 		request_token_url=None,
@@ -55,7 +59,7 @@ def create_app(config_name):
 		authorize_url=app.config['AMB_GOOGLE_AUTHORIZE_URL'],
 		consumer_key=app.config['AMB_GOOGLE_APP_KEY'],
 		consumer_secret=app.config['AMB_GOOGLE_APP_SECRET'],
-		request_token_params={'scope': 'openid email profile', 'state': 'google'},
+		request_token_params={'scope': 'openid email profile', 'state': state_dict},
 	)
 
 	facebook = oauth.remote_app('facebook',
@@ -65,7 +69,7 @@ def create_app(config_name):
 		authorize_url=app.config['AMB_FACEBOOK_AUTHORIZE_URL'],
 		consumer_key=app.config['AMB_FACEBOOK_APP_KEY'],
 		consumer_secret=app.config['AMB_FACEBOOK_APP_SECRET'],
-		request_token_params={'scope': 'email', 'state': 'facebook'}
+		request_token_params={'scope': 'email', 'state': state_dict},
 	)
 
 
@@ -76,39 +80,57 @@ def create_app(config_name):
 				return None
 
 		try:
-			if 'authoization' not in request.headers:
+			if 'authorization' not in request.headers:
 				raise RuntimeError('Authorization header not found for non-public url: {}'.format(request.path))
+			auth_header = request.headers['authorization']
 			if not auth_header.startswith('Bearer '):
 				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
 			token = auth_header[7:]
+			print('decoded token from authoization header', token)
 			try:
 				payload = jwt.decode(token, os.environ.get('SECRET') or '')
-				userId = payload['userId']
-				expires = datetime.datetime.strpfmt(payload['expires'], '%Y-%m-%dT%H:%M:%S%z')
-			except:
+				print('payload decoded from header', payload)
+				sessionId = payload['sessionId']
+				# userId = payload['userId']
+				#expires = datetime.datetime.strpfmt(payload['expires'], '%Y-%m-%dT%H:%M:%S%z')
+				ses = m.Session.query.get(sessionId)
+				userId = ses.userId
+			except Exception as e:
+				print('Exception is', e)
 				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
-			now = datetime.datetime.now()
-			if expires < now:
-				# session expires
-				raise ValueError('session expired at {}, now {}'.format(expires, now))
-			user = m.User.query.get(m.User.userId==userId)
+			if userId is None:
+				raise RuntimeError('session not attached to user')
+			# now = datetime.datetime.now()
+			# if expires < now:
+			# 	# session expires
+			# 	raise ValueError('session expired at {}, now {}'.format(expires, now))
+			print('Trying to get user {}'.format(userId))
+			user = m.User.query.get(userId)
+			print('user decoded from header: ', user.dump(user))
 			if user:
 				# authentication succeeded
 				g.current_user = user
+				g.sessionId = sessionId
 				return None
 
 		except Exception as e:
 			# authentication failed
 			print('authentication failed: {}'.format(e))
 			print('request.path', request.path)
-			if request.path == '/whoami':
+			if request.path == '/session':
 				# create a new session
-				print('requesting /whoami but authentication failed, about to create a new one');
+				print('requesting /session but authentication failed, about to create a new one');
 				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)
 				ses = m.Session(sessionExpiresAt=three_days_later)
 				SS.add(ses)
 				SS.commit()
-				return make_response(jsonify(session=m.Session.dump(ses)),
+				print('Session is', ses.dump(ses))
+				payload = {
+					'sessionId': ses.sessionId
+				}
+				print('payload is', payload)
+				sessionToken = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
+				return make_response(jsonify(sessionToken=sessionToken, sessionId=ses.sessionId),
 					401, {'Content-Type': 'application/json'})
 
 		is_json = False
@@ -126,11 +148,19 @@ def create_app(config_name):
 
 	@app.route('/authorization_response')
 	def authorization_response():
-		state = request.args.get('state', '')
-		if state.find('google') >= 0:
+		state_literal = request.args.get('state', '')
+		print('state literal is %r' % state_literal)
+		try:
+			state = eval(state_literal)
+		except:
+			state = {}
+		print('state returned from incoming request is', state)
+
+		if state.get('provider') == 'google':
 			provider = google
-		elif state.find('facebook') >= 0:
+		elif state.get('provider') == 'facebook':
 			provider = facebook
+
 
 		# retrieve the access_token using code from authorization grant
 		try:
@@ -185,15 +215,31 @@ def create_app(config_name):
 				SS.add(user)
 				SS.commit()
 
+		# TODO: check sessionId in csae it is invalid
+		sessionId = state.get('session_id')
+		# update session to mark it belongs to user
+		ses = m.Session.query.get(sessionId)
+		ses.userId = user.userId
+		SS.flush()
+		SS.commit()
+
 		# TODO: create jwt token for user
-		return redirect(location=url_for('dashboard', _external=True))
+		payload = {
+			'sessionId': sessionId,
+			'userId': user.userId,
+			'extra': {
+				'data': 'whatever',
+			},
+		}
+		token = jwt.encode(payload, os.environ.get('SECRET') or '')
+		return redirect(location=url_for('dashboard', jwt=token, _external=True))
 
 
 	@app.route('/dashboard')
 	def dashboard():
 		if getattr(g, 'current_user', None):
 			return 'Welcome {}'.format(g.current_user.userId)
-		return 'You are not logged in'
+		return 'g.current_user is not set'
 
 
 	@app.route('/debug')
@@ -212,12 +258,20 @@ def create_app(config_name):
 	@app.route('/login')
 	def login():
 		identity_provider = request.args.get('use', '')
+		session_id = request.args.get('session_id', '')
+
+		# TODO: validate session_id
+
 		if identity_provider == 'google':
 			log.debug('login with google')
+			state_dict['provider'] = 'google'
+			state_dict['session_id'] = session_id
 			callback = url_for('authorization_response', _external=True)
 			return google.authorize(callback=callback)
 		elif identity_provider == 'facebook':
 			log.debug('loging with facebook')
+			state_dict['provider'] = 'facebook'
+			state_dict['session_id'] = session_id
 			callback = url_for('authorization_response', _external=True)
 			return facebook.authorize(callback=callback)
 		return 'login using system database'
@@ -225,12 +279,23 @@ def create_app(config_name):
 
 	@app.route('/logout')
 	def logout():
-
 		return redirect(location='/')
 
-	@app.route('/whoami')
-	def whoami():
-		return jsonify(sessionId='123', accessToken='access', refreshToken='refresh', userId='unknown')
+
+	@app.route('/session')
+	def session():
+		userId = g.current_user.userId
+		sessionId = g.sessionId
+		payload = {
+			'sessionId': sessionId,
+			'userId': userId,
+			'extra': {
+				'data': 'whatever',
+			},
+		}
+		token = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
+		return jsonify(sessionToken=token, sessionId=sessionId)
+
 
 	@app.route('/', defaults={'path': ''})
 	@app.route('/<path:path>')

@@ -80,7 +80,7 @@ class User(Base):
 
 class UserSchema(Schema):
 	class Meta:
-		fields = ('id', 'nickName', 'familyName', 'givenName', 'fullName', 'gender',
+		fields = ('userId', 'nickName', 'familyName', 'givenName', 'fullName', 'gender',
 			'dob', 'createdAt')
 
 # Baby
