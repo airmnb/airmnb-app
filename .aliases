@@ -5,6 +5,7 @@ alias upgrade="python3 manage.py db upgrade"
 alias downgrade="python3 manage.py db downgrade"
 alias m="python3 manage.py"
 alias start="python3 manage.py runserver"
+alias apis="python3 manage.py list"
 alias build="pip3 install -r requirements.txt && \
 if cd web; then git pull; else git clone --depth 1 --progress -b master https://github.com/airmnb/airmnb-web.git web; fi && \
 npm install && \
