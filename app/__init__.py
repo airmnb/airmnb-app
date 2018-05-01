@@ -30,16 +30,15 @@ def create_app(config_name):
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
 		'/favicon.ico$',
-		'/dashboard$',
-		'/login$',
-		'/logout$',
-		'/debug$',
-		'/authorization_response$',
-		'/health-check$',
+		'/sys/login$',
+		'/sys/logout$',
+		'/sys/debug$',
+		'/sys/authorization_response$',
+		'/sys/health-check$',
 		'/$',
 	]))
 	json_url_patterns = list(map(re.compile, [
-		'/whoami$',
+		'/sys/whoami$',
 		'/api/'
 	]))
 
@@ -117,7 +116,7 @@ def create_app(config_name):
 			# authentication failed
 			print('authentication failed: {}'.format(e))
 			print('request.path', request.path)
-			if request.path == '/session':
+			if request.path == '/sys/whoami':
 				# create a new session
 				print('requesting /session but authentication failed, about to create a new one');
 				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)
@@ -146,7 +145,7 @@ def create_app(config_name):
 				401, {'Content-Type': 'application/json'})
 		return redirect(location='/#/login')
 
-	@app.route('/authorization_response')
+	@app.route('/sys/authorization_response')
 	def authorization_response():
 		state_literal = request.args.get('state', '')
 		print('state literal is %r' % state_literal)
@@ -232,17 +231,12 @@ def create_app(config_name):
 			},
 		}
 		token = jwt.encode(payload, os.environ.get('SECRET') or '')
-		return redirect(location=url_for('dashboard', jwt=token, _external=True))
+		# return redirect(location=url_for('catch_all', jwt=token, _external=True))
+		# return redirect(location=url_for('dashboard', jwt=token, _external=True))
+		return redirect(location=url_for('catch_all', _external=True))
 
 
-	@app.route('/dashboard')
-	def dashboard():
-		if getattr(g, 'current_user', None):
-			return 'Welcome {}'.format(g.current_user.userId)
-		return 'g.current_user is not set'
-
-
-	@app.route('/debug')
+	@app.route('/sys/debug')
 	def debug():
 		buf = []
 		for k, v in sorted(os.environ.items()):
@@ -250,12 +244,12 @@ def create_app(config_name):
 		return make_response('\n'.join(buf), 200, {'Content-Type': 'text/plain'})
 
 
-	@app.route('/health-check')
+	@app.route('/sys/health-check')
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
 
 
-	@app.route('/login')
+	@app.route('/sys/login')
 	def login():
 		identity_provider = request.args.get('use', '')
 		session_id = request.args.get('session_id', '')
@@ -277,13 +271,14 @@ def create_app(config_name):
 		return 'login using system database'
 
 
-	@app.route('/logout')
+	@app.route('/sys/logout')
 	def logout():
 		return redirect(location='/')
 
 
-	@app.route('/session')
-	def session():
+	@app.route('/sys/session')
+	@app.route('/sys/whoami')
+	def whoami():
 		userId = g.current_user.userId
 		sessionId = g.sessionId
 		payload = {
@@ -294,12 +289,25 @@ def create_app(config_name):
 			},
 		}
 		token = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
-		return jsonify(sessionToken=token, sessionId=sessionId)
+		return jsonify(sessionToken=token, sessionId=sessionId, user=m.User.dump(g.current_user))
 
+	# @app.errorhandler(404)
+	# def default_hander(exc):
+	# 	if request.path.startswith('/static'):
+	# 		return make_response(
+	# 			_('Sorry, the resource you have requested for is not found'),
+	# 			404)
+	# 	if request.path.startswith('/api/'):
+	# 		return make_response(jsonify(error='requested url not found'),
+	# 			404, {})
+	# 	# TODO: only redirect valid urls
+	# 	return redirect('/#%s' % request.path)
 
 	@app.route('/', defaults={'path': ''})
 	@app.route('/<path:path>')
 	def catch_all(path):
-		return send_file('index.html', cache_timeout=0)
+		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')):
+			return send_file('index.html', cache_timeout=0)
+		return make_response('not found', 404)
 
 	return app
