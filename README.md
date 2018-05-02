@@ -1,5 +1,6 @@
 # airmnb-app
 
+This is the home of Airmnb Api server.
 
 ## Setup Development Environment
 
@@ -7,26 +8,19 @@
 
 Please make sure following prerequisites are all installed.
 
- - python3
- - pip3
- - PostgreSQL server
- - psql
-
-### Install virtualenv
-
-Please follow the instructions in https://virtualenv.pypa.io/en/stable/installation/ to install virtualenv first.
+ - `python3`
+ - `pip3`
+ - `PostgreSQL server`, optional if you have a remote Airmnb database
+ - `psql`
+ - `virtualenv`, please follow the installation instructions in https://virtualenv.pypa.io/en/stable/installation/.
 
 ### Clone code repo and install dependencies
 
 ```
 $ git clone https://github.com/airmnb/airmnb-app
-
 $ cd airmnb-app
-
 $ virtualenv venv
-
 $ . venv/bin/activate
-
 $ pip3 install -r requirements.txt
 ```
 
@@ -39,20 +33,15 @@ Plese use following command to create database
 createdb airmmb
 ```
 
-#### Setup db uri
+#### Setup env vars
 
-Edit setenv.sh, set the ```AMB_DATABASE_URI``` to following value
+Create a `env` file in the directory root path and edit required env vars like `AMB_DATABASE_URI`.
 
 ```
 export AMB_DATABASE_URI=postgresql://localhost/airmnb
 ```
 
-A more general pattern will be:
-```
-export AMB_DATABASE_URI=postgresql://username:password@hostname:port/database_name
-```
-
-After you have updated setenv.sh, load it into current environment:
+After you have updated `env`, run below command to load env vars into the current environment:
 ```
 source setenv.sh
 ```
@@ -94,14 +83,14 @@ alias aa='cd ~/airmnb-app; . venv/bin/activate; . setenv.sh'
 
 After you have setup database, you can start the server by running:
 ```
-python3 manage.py runserver
+start
 ```
 
 ### Test api
 
 When server is running, you can test api by running:
 ```
-curl localhost:5000/health-check
+curl localhost:5000/sys/health-check
 ```
 
 This should return status code 200 and a text says 'OK'.
