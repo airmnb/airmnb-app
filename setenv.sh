@@ -15,8 +15,8 @@ export AMB_GOOGLE_APP_SECRET=yZjP1B_oofR451Nee8zOefcr
 export AMB_GOOGLE_AUTHORIZE_URL=https://accounts.google.com/o/oauth2/v2/auth
 export AMB_GOOGLE_ACCESS_TOKEN_URL=https://www.googleapis.com/oauth2/v4/token
 
-export AMB_WECHAT_APP_KEY=
-export AMB_WECHAT_APP_SECRET=
+export AMB_WECHAT_APP_KEY=wxb45fa53ae00e3b16
+export AMB_WECHAT_APP_SECRET=042f0fed3930591f05b6440663720d9c
 
 
 # # For China

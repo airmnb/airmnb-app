@@ -6,6 +6,7 @@ import logging
 import datetime
 import json
 import urllib
+import uuid
 
 import sqlalchemy.orm.exc
 from flask import Flask, request, redirect, make_response, g, send_file, url_for, jsonify
@@ -31,6 +32,7 @@ def create_app(config_name):
 		'/static/',
 		'/favicon.ico$',
 		'/sys/login$',
+		'/sys/login/weapp',
 		'/sys/logout$',
 		'/sys/debug$',
 		'/sys/authorization_response$',
@@ -248,6 +250,37 @@ def create_app(config_name):
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
 
+	@app.route('/sys/login/weapp')
+	def weapp_login():
+		# https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html#wxloginobject
+		code = request.args['code']
+		app_id = os.environ['AMB_WECHAT_APP_ID']
+		secret = os.environ['AMB_WECHAT_APP_SECRET']
+		url = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type=authorization_code".format(app_id, secret, code)
+		response = requests.get(url)
+		if(response.ok):
+			jdata = json.loads(response.content)
+			if(not 'errcode' in jdata):
+				openid = jdata['openid']
+				# TOOD: Add logic to get_or_set AirMnb profile
+				wechat_user = m.WechatUser.query.filter(m.WechatUser.openId == openid).one_or_none()
+				if(wechat_user is None):
+					userid = str(uuid.uuid4())
+					wechat_user = m.WechatUser(**{
+						'id': userid, 
+						'openId': openid,
+					})
+					user = m.User(**{
+						'id': userid,
+					})
+					SS.add(wechat_user)
+					SS.add(user)
+					SS.flush()
+				else:
+					user = m.User.query.filter(m.User.id == wechat_user.id).one()
+				return jsonify(user=m.User.dump(user))
+
+		return make_response('Bad request', 400)
 
 	@app.route('/sys/login')
 	def login():
@@ -308,6 +341,6 @@ def create_app(config_name):
 	def catch_all(path):
 		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')):
 			return send_file('index.html', cache_timeout=0)
-		return make_response('not found', 404)
+		return make_response('Not found', 404)
 
 	return app
