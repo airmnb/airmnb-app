@@ -7,8 +7,8 @@
 
 Please make sure following prerequisites are all installed.
 
- - python
- - pip
+ - python3
+ - pip3
  - PostgreSQL server
  - psql
 
@@ -27,7 +27,7 @@ $ virtualenv venv
 
 $ . venv/bin/activate
 
-$ pip install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 ### Setup Database
@@ -79,7 +79,7 @@ you have run this before, then you shouldn't run this command again, otherwise t
 
 You may upgrade the db schema to the latest version by running:
 ```
-python manage.py db upgrade head
+python3 manage.py db upgrade head
 ```
 
 ### Add convenience commands
@@ -87,14 +87,14 @@ python manage.py db upgrade head
 For your convenience, you can create an alias command in your .bash_profile to quickly jump to your working folder. For example, if you have cloned the repo to `~/airmnb-python-backend` and you want to use a shortcut `aa`, then you can add:
 
 ```
-alias aa='cd ~/airmnb-python-backend; . venv/bin/activate; . setenv.sh'
+alias aa='cd ~/airmnb-app; . venv/bin/activate; . setenv.sh'
 ```
 
 ### Start server
 
 After you have setup database, you can start the server by running:
 ```
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 ### Test api
