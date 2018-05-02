@@ -1,23 +1,23 @@
 
-export AMB_DATABASE_URI=postgres://qstqzkzu:wIRQ-yASKMaE7hEdABZCD7cSKUuC40DA@stampy.db.elephantsql.com:5432/qstqzkzu
-export AMB_WECHAT_APP_ID=wxb945640b6fd4a85b
-export AMB_WECHAT_APP_SECRET=dc5b64195b959e8126d569b5fb96e425
+export AMB_DATABASE_URI=postgres://*
 # For non China
 export AMB_DOMAIN_NAME=www.airmombaby.com
 
-export AMB_FACEBOOK_APP_KEY=100732940275183
-export AMB_FACEBOOK_APP_SECRET=d3cec74fd9e331fed0d22ef9c00b93dc
+export AMB_FACEBOOK_APP_KEY=
+export AMB_FACEBOOK_APP_SECRET=
 export AMB_FACEBOOK_AUTHORIZE_URL=https://www.facebook.com/dialog/oauth
 export AMB_FACEBOOK_ACCESS_TOKEN_URL=/oauth/access_token
 
-export AMB_GOOGLE_APP_KEY=372339553651.apps.googleusercontent.com
-export AMB_GOOGLE_APP_SECRET=yZjP1B_oofR451Nee8zOefcr
+export AMB_GOOGLE_APP_KEY=
+export AMB_GOOGLE_APP_SECRET=
 export AMB_GOOGLE_AUTHORIZE_URL=https://accounts.google.com/o/oauth2/v2/auth
 export AMB_GOOGLE_ACCESS_TOKEN_URL=https://www.googleapis.com/oauth2/v4/token
 
-export AMB_WECHAT_APP_KEY=wxb45fa53ae00e3b16
-export AMB_WECHAT_APP_SECRET=042f0fed3930591f05b6440663720d9c
+export AMB_WECHAT_APP_KEY=
+export AMB_WECHAT_APP_SECRET=
 
+export AMB_WEAPP_APP_ID=
+export AMB_WEAPP_APP_SECRET=
 
 # # For China
 # export AMB_DOMAIN_NAME=www.airmnb.com
