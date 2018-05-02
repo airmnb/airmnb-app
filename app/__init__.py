@@ -263,6 +263,7 @@ def create_app(config_name):
 			jdata = json.loads(response.content)
 			if(not 'errcode' in jdata):
 				openid = jdata['openid']
+				print('weapp openid', openid)
 				# TOOD: Add logic to get_or_set AirMnb profile
 				wechat_user = m.WechatUser.query.filter(m.WechatUser.openId == openid).one_or_none()
 				if(wechat_user is None):
@@ -278,7 +279,7 @@ def create_app(config_name):
 					SS.add(user)
 					SS.flush()
 				else:
-					user = m.User.query.filter(m.User.id == wechat_user.id).one()
+					user = m.User.query.filter(m.User.userId == wechat_user.id).one()
 				return jsonify(user=m.User.dump(user))
 		return make_response('Bad request', 400)
 
