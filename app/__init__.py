@@ -279,7 +279,6 @@ def create_app(config_name):
 				else:
 					user = m.User.query.filter(m.User.id == wechat_user.id).one()
 				return jsonify(user=m.User.dump(user))
-
 		return make_response('Bad request', 400)
 
 	@app.route('/sys/login')
