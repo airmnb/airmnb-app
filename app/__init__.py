@@ -260,7 +260,7 @@ def create_app(config_name):
 		response = requests.get(url)
 		print(response.content)
 		if(response.ok):
-			jdata = json.loads(response.content)
+			jdata = json.loads(response.content.decode('utf-8'))
 			if(not 'errcode' in jdata):
 				openid = jdata['openid']
 				print('weapp openid', openid)
