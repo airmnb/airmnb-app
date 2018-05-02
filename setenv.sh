@@ -1,7 +1,7 @@
 
 export AMB_DATABASE_URI=postgres://*
 # For non China
-export AMB_DOMAIN_NAME=www.airmombaby.com
+export AMB_DOMAIN_NAME=
 
 export AMB_FACEBOOK_APP_KEY=
 export AMB_FACEBOOK_APP_SECRET=
@@ -19,9 +19,7 @@ export AMB_WECHAT_APP_SECRET=
 export AMB_WEAPP_APP_ID=
 export AMB_WEAPP_APP_SECRET=
 
-# # For China
-# export AMB_DOMAIN_NAME=www.airmnb.com
-
+. ./env
 
 FILE_DIR=$(dirname "${BASH_SOURCE}")
 
