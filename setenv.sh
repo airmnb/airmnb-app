@@ -32,8 +32,6 @@ if [ -e "${LOCAL_ENV}" ]; then
 fi
 
 echo -e "\033[1;32mAMB_DATABASE_URI: \033[0;36m${AMB_DATABASE_URI}\033[0m"
-echo -e "\033[1;32mAMB_WECHAT_APP_ID: \033[0;36m${AMB_WECHAT_APP_ID}\033[0m"
-echo -e "\033[1;32mAMB_WECHAT_APP_SECRET: \033[0;36m${AMB_WECHAT_APP_SECRET}\033[0m"
 echo -e "\033[1;32mAMB_DOMAIN_NAME: \033[0;36m${AMB_DOMAIN_NAME}\033[0m"
 
 # load aliases for convenience
