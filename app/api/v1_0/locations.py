@@ -17,7 +17,7 @@ _name = __file__.split('/')[-1].split('.')[0]
 @caps()
 def get_locations():
 	locations = m.Location.query.order_by(m.Location.locationId).all()
-	return jsonify(locations=m.Location.dump(locations))
+	return jsonify(items=m.Location.dump(locations))
 
 
 def check_uuid_availability(data, key, locationId):
@@ -69,7 +69,7 @@ def create_new_location():
 
 	return jsonify(message=_('created location {0} successfully'
 		).format(location.locationId),
-		location=m.Location.dump(location),
+		items=[m.Location.dump(location)],
 	)
 
 
@@ -80,5 +80,5 @@ def get_location(locationId):
 	location = m.Location.query.get(locationId)
 	if not location:
 		raise InvalidUsage(_('location {0} not found').format(loctionId), 404)
-	return jsonify(location=m.Location.dump(location))
+	return jsonify(ietms=[m.Location.dump(location)])
 

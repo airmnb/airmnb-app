@@ -19,6 +19,8 @@ export AMB_WECHAT_APP_SECRET=
 export AMB_WEAPP_APP_ID=
 export AMB_WEAPP_APP_SECRET=
 
+export DEBUG=
+
 FILE_DIR=$(dirname "${BASH_SOURCE}")
 
 #
