@@ -11,6 +11,7 @@ import uuid
 import sqlalchemy.orm.exc
 from flask import Flask, request, redirect, make_response, g, send_file, url_for, jsonify
 from flask_oauthlib.client import OAuth
+from flask_cors import CORS
 import requests
 import jwt
 
@@ -27,6 +28,7 @@ def create_app(config_name):
 	app.config.from_object(config[config_name])
 	config[config_name].init_app(app)
 	db.init_app(app)
+	CORS(app, resources={'/api/1.0/*': {'origins': '*'}})
 
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
