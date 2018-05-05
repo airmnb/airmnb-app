@@ -79,7 +79,7 @@ def create_app(config_name):
 	@app.before_request
 	def authenticate_request():
 		if os.environ.get('DEBUG') and request.method == 'OPTIONS':
-			return None
+			return make_response('', 200)
 
 		for i, p in enumerate(public_url_patterns):
 			if p.match(request.path):
