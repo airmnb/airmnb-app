@@ -28,7 +28,7 @@ def create_app(config_name):
 	app.config.from_object(config[config_name])
 	config[config_name].init_app(app)
 	db.init_app(app)
-	CORS(app, resources={'/api/1.0/*': {'origins': '*'}, '/sys/*', {'origins': '*'}})
+	CORS(app, resources={'/api/1.0/*': {'origins': '*'}, '/sys/*': {'origins': '*'}})
 
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
