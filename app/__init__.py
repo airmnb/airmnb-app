@@ -39,7 +39,7 @@ def create_app(config_name):
 		'/sys/logout$',
 		'/sys/debug$',
 		'/sys/authorization_response$',
-		'/sys/health-check$',
+		'/sys/health_check$',
 		'/$',
 	]))
 	json_url_patterns = list(map(re.compile, [
@@ -287,17 +287,17 @@ def create_app(config_name):
 				if(wechat_user is None):
 					userid = str(uuid.uuid4())
 					wechat_user = m.WechatUser(**{
-						'id': userid, 
+						'wechatUserId': userid, 
 						'openId': openid,
 					})
 					user = m.User(**{
-						'id': userid,
+						'userId': userid,
 					})
 					SS.add(wechat_user)
 					SS.add(user)
 					SS.flush()
 				else:
-					user = m.User.query.filter(m.User.userId == wechat_user.id).one()
+					user = m.User.query.filter(m.User.userId == wechat_user.wechatUserId).one()
 
 				userId = user.userId
 				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)

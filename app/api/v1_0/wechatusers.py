@@ -32,24 +32,24 @@ def create_wechatuser():
 	new_uuid = helper.generate_new_uuid()
 
 	wechat_user_data = MyForm(
-		Field('id', is_mandatory=True,
+		Field('wechatUserId', is_mandatory=True,
 			default=lambda: new_uuid,
 			normalizer=helper.normalize_uuid,
 			validators=[
 				helper.check_uuid_is_valid,
 		]),
-		Field('openid', is_mandatory=True),
-		Field('avartar_url')
+		Field('openId', is_mandatory=True),
+		Field('avartarUrl')
 	).get_data(copy=True)
 
 	user_data = MyForm(
-		Field('id', is_mandatory=True,
+		Field('userId', is_mandatory=True,
 			default=lambda: new_uuid,
 			normalizer=helper.normalize_uuid,
 			validators=[
 				helper.check_uuid_is_valid,
 		]),
-		Field('full_name'),
+		Field('fullName'),
 		Field('gender'),
 		Field('dob'),
 	).get_data(copy=True)
