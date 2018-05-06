@@ -10,7 +10,7 @@ metadata = sa.MetaData()
 ##########################################################################
 
 t_wechat_users = sa.Table('wechat_users', metadata,
-	sa.Column('wechat_user_id', pg.UUID, primary_key=True, autoincrement=False, key=u'id', doc=''),
+	sa.Column('wechat_user_id', pg.UUID, primary_key=True, autoincrement=False, key=u'wechatUserId', doc=''),
 	sa.Column('open_id', pg.TEXT, nullable=False, key=u'openId', doc=''),
 	sa.Column('avartar_url', pg.TEXT, nullable=True, key=u'avartarUrl', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
