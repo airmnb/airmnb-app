@@ -19,6 +19,7 @@ def get_users():
 	users = m.User.query.order_by(m.User.createdAt).all()
 	return jsonify(users=m.User.dump(users))
 
+
 @bp.route(_name + '/<userId>', methods=['GET'])
 @api
 @caps()
@@ -26,26 +27,25 @@ def get_user(userId):
 	user = m.User.query.filter(m.User.userId == userId).one()
 	return jsonify(users=m.User.dump(user))
 
-@bp.route(_name + '/', methods=['PUT'])
+
+@bp.route(_name + '/<userId>', methods=['PUT'])
 @api
 @caps()
-def update_user():
+def update_user(userId):
+	user = m.User.query.get(userId)
+	if not user:
+		raise InvalidUsage(_('user {0} not found').format(userId), 404)
 	data = MyForm(
-		Field('id', is_mandatory=True,
-			normalizer=helper.normalize_uuid,
-			validators=[
-				helper.check_uuid_is_valid,
-		]),
-		Field('full_name'),
+		Field('fullName'),
 		Field('gender'),
 		Field('dob'),
-	).get_data(copy=True)
-
-	user = m.User(**data)
-	SS.add(user)
+	).get_data()
+	for k, v in data.items():
+		print (k, v)
+		setattr(user, k, v)
 	SS.flush()
 
-	return jsonify(message=_('Updated user {0} successfully'
-		).format(user.id),
+	return jsonify(
+		message=_('Updated user {0} successfully').format(userId),
 		user=m.User.dump(user),
 	)
