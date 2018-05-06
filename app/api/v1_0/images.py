@@ -1,4 +1,6 @@
 
+import mimetypes
+
 from flask import request, session, jsonify
 import psycopg2
 
@@ -23,8 +25,11 @@ def create_new_image():
 				validators.is_file,
 			]),
 	).get_data(is_json=False)
-	blob = data['dataFile'].read()
-	image = m.Image(blob=blob)
+	dataFile = data['dataFile']
+	blob = dataFile.read()
+	filename = dataFile.filename
+	mimeType, encoding = mimetypes.guess_type(filename)
+	image = m.Image(blob=blob, mimeType=mimeType, filename=filename)
 	SS.add(image)
 	SS.flush()
 	return jsonify(image=m.Image.dump(image))

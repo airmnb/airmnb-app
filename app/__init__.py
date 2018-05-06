@@ -304,11 +304,11 @@ def create_app(config_name):
 
 	@app.route('/public/images/<imageId>')
 	def get_image(imageId):
-		img = m.Image.query.get(imageId)
-		if not img:
+		image = m.Image.query.get(imageId)
+		if not image:
 			return make_response('image not found', 404)
-		return make_response(image.body, 200, {'Content-Type': img.mimeType,
-			'Content-Length': image.blob.length})
+		return make_response(image.blob, 200, {'Content-Type': image.mimeType,
+			'Content-Length': len(image.blob)})
 
 	@app.route('/sys/login')
 	def login():
