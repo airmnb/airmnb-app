@@ -124,6 +124,15 @@ class SessionSchema(Schema):
 		fields = ('sessionId', 'userId', 'accessToken', 'refreshToken')
 
 
+class Image(Base):
+	__table__ = t_images
+
+
+class ImageSchema(Schema):
+	class Meta:
+		fields = ('imageId',)
+
+
 ##########################################################################
 #
 # Define model class and its schema (if needed) above

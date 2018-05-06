@@ -32,6 +32,7 @@ def create_app(config_name):
 
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
+		'/public/',
 		'/favicon.ico$',
 		'/sys/login$',
 		'/sys/login/weapp',
@@ -257,8 +258,11 @@ def create_app(config_name):
 			buf.append('{}\t{}\n'.format(k, v))
 		return make_response('\n'.join(buf), 200, {'Content-Type': 'text/plain'})
 
+	@app.route('/sys/signup')
+	def singup():
+		return ''
 
-	@app.route('/sys/health-check')
+	@app.route('/sys/health_check')
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
 
