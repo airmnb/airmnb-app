@@ -196,6 +196,7 @@ def create_app(config_name):
 			except sqlalchemy.orm.exc.NoResultFound as e:
 				# user does not exist, create it
 				user = m.User(
+					source= 9,
 					familyName=data['family_name'],
 					givenName=data['given_name'],
 					# gender
@@ -223,6 +224,7 @@ def create_app(config_name):
 				user = m.User.query.filter(m.User.email==email).one()
 			except sqlalchemy.orm.exc.NoResultFound as e:
 				user = m.User(
+					source= 4,
 					familyName=data['last_name'],
 					givenName=data['first_name'],
 					fullName=data['name'],
@@ -283,21 +285,22 @@ def create_app(config_name):
 				openid = jdata['openid']
 				print('weapp openid', openid)
 				# TOOD: Add logic to get_or_set AirMnb profile
-				wechat_user = m.WechatUser.query.filter(m.WechatUser.openId == openid).one_or_none()
-				if(wechat_user is None):
+				wechatUser = m.WechatUser.query.filter(m.WechatUser.openId == openid).one_or_none()
+				if(wechatUser is None):
 					userid = str(uuid.uuid4())
-					wechat_user = m.WechatUser(**{
+					wechatUser = m.WechatUser(**{
 						'wechatUserId': userid, 
 						'openId': openid,
 					})
 					user = m.User(**{
 						'userId': userid,
+						'source': 8
 					})
-					SS.add(wechat_user)
+					SS.add(wechatUser)
 					SS.add(user)
 					SS.flush()
 				else:
-					user = m.User.query.filter(m.User.userId == wechat_user.wechatUserId).one()
+					user = m.User.query.filter(m.User.userId == wechatUser.wechatUserId).one()
 
 				userId = user.userId
 				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)
