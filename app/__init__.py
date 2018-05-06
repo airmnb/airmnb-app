@@ -298,7 +298,24 @@ def create_app(config_name):
 					SS.flush()
 				else:
 					user = m.User.query.filter(m.User.userId == wechat_user.id).one()
-				return jsonify(user=m.User.dump(user))
+
+				userId = user.userId
+				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)
+				ses = m.Session(sessionExpiresAt=three_days_later, userId=userId)
+				SS.add(ses)
+				SS.commit()
+
+				sessionId = ses.sessionId
+				payload = {
+					'sessionId': sessionId,
+					'userId': userId,
+					'extra': {
+						'data': 'whatever',
+					},
+				}
+				token = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
+				return jsonify(sessionToken=token, sessionId=sessionId, user=m.User.dump(user))
+				# return jsonify(user=m.User.dump(user))
 		return make_response('Bad request', 400)
 
 
