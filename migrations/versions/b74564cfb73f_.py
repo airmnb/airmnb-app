@@ -26,7 +26,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('image_id')
     )
     op.create_table('locations',
-    sa.Column('location_id', postgresql.UUID(), autoincrement=False, nullable=False),
+    sa.Column('location_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
     sa.Column('langitude', postgresql.DOUBLE_PRECISION(), nullable=False),
     sa.Column('latitude', postgresql.DOUBLE_PRECISION(), nullable=False),
     sa.Column('addr1', sa.TEXT(), nullable=False),
@@ -39,7 +39,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('location_id')
     )
     op.create_table('users',
-    sa.Column('user_id', postgresql.UUID(), autoincrement=False, nullable=False),
+    sa.Column('user_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
     sa.Column('email', sa.TEXT(), nullable=True),
     sa.Column('nick_name', sa.TEXT(), nullable=True),
     sa.Column('family_name', sa.TEXT(), nullable=True),
@@ -51,14 +51,14 @@ def upgrade():
     sa.PrimaryKeyConstraint('user_id')
     )
     op.create_table('wechat_users',
-    sa.Column('wechat_user_id', postgresql.UUID(), autoincrement=False, nullable=False),
+    sa.Column('wechat_user_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
     sa.Column('open_id', sa.TEXT(), nullable=False),
     sa.Column('avartar_url', sa.TEXT(), nullable=True),
     sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('wechat_user_id')
     )
     op.create_table('activities',
-    sa.Column('activity_id', postgresql.UUID(), autoincrement=False, nullable=False),
+    sa.Column('activity_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
     sa.Column('name', sa.TEXT(), nullable=False),
     sa.Column('description', sa.TEXT(), nullable=True),
     sa.Column('location_id', postgresql.UUID(), nullable=False),
@@ -66,7 +66,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('activity_id')
     )
     op.create_table('babies',
-    sa.Column('baby_id', postgresql.UUID(), autoincrement=False, nullable=False),
+    sa.Column('baby_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
     sa.Column('family_name', sa.TEXT(), nullable=True),
     sa.Column('given_name', sa.TEXT(), nullable=True),
     sa.Column('full_name', sa.TEXT(), nullable=True),

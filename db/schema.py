@@ -1,6 +1,4 @@
 
-import uuid
-
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
 
@@ -10,15 +8,14 @@ metadata = sa.MetaData()
 ##########################################################################
 
 t_wechat_users = sa.Table('wechat_users', metadata,
-	sa.Column('wechat_user_id', pg.UUID, primary_key=True, autoincrement=False, key=u'wechatUserId', doc=''),
+	sa.Column('wechat_user_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'wechatUserId', doc=''),
 	sa.Column('open_id', pg.TEXT, nullable=False, key=u'openId', doc=''),
 	sa.Column('avartar_url', pg.TEXT, nullable=True, key=u'avartarUrl', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 )
 
 t_users = sa.Table('users', metadata,
-	sa.Column('user_id', pg.UUID, primary_key=True, autoincrement=False,
-			default=lambda: str(uuid.uuid4()), key=u'userId', doc=''),
+	sa.Column('user_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'userId', doc=''),
 	sa.Column('email', pg.TEXT, nullable=True, key=u'email', doc=''),
 	sa.Column('nick_name', pg.TEXT, nullable=True, key=u'nickName', doc=''),
 	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
@@ -30,7 +27,7 @@ t_users = sa.Table('users', metadata,
 )
 
 t_babies = sa.Table('babies', metadata,
-	sa.Column('baby_id', pg.UUID, primary_key=True, autoincrement=False, key=u'babyId', doc=''),
+	sa.Column('baby_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'babyId', doc=''),
 	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
 	sa.Column('given_name', pg.TEXT, nullable=True, key=u'givenName', doc=''),
 	sa.Column('full_name', pg.TEXT, nullable=True, key=u'fullName', doc=''),
@@ -42,7 +39,7 @@ t_babies = sa.Table('babies', metadata,
 )
 
 t_locations = sa.Table('locations', metadata,
-	sa.Column('location_id', pg.UUID, primary_key=True, autoincrement=False, key=u'locationId', doc=''),
+	sa.Column('location_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'locationId', doc=''),
 	sa.Column('langitude', pg.DOUBLE_PRECISION, nullable=False, key=u'langitude', doc=''),
 	sa.Column('latitude', pg.DOUBLE_PRECISION, nullable=False, key=u'latitude', doc=''),
 	sa.Column('addr1', pg.TEXT, nullable=False, key=u'addr1', doc=''),
@@ -55,7 +52,7 @@ t_locations = sa.Table('locations', metadata,
 )
 
 t_activities = sa.Table('activities', metadata,
-	sa.Column('activity_id', pg.UUID, primary_key=True, autoincrement=False, key=u'activityId', doc=''),
+	sa.Column('activity_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'activityId', doc=''),
 	sa.Column('name', pg.TEXT, nullable=False, key=u'name', doc=''),
 	sa.Column('description', pg.TEXT, key=u'description', doc=''),
 	sa.Column('location_id', pg.UUID, nullable=False, key=u'locationId', doc=''),

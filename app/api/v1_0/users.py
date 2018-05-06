@@ -25,7 +25,7 @@ def get_users():
 @caps()
 def get_user(userId):
 	user = m.User.query.filter(m.User.userId == userId).one()
-	return jsonify(users=m.User.dump(user))
+	return jsonify(user=m.User.dump(user))
 
 
 @bp.route(_name + '/<userId>', methods=['PUT'])
@@ -41,10 +41,8 @@ def update_user(userId):
 		Field('dob'),
 	).get_data()
 	for k, v in data.items():
-		print (k, v)
 		setattr(user, k, v)
 	SS.flush()
-
 	return jsonify(
 		message=_('Updated user {0} successfully').format(userId),
 		user=m.User.dump(user),
