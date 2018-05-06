@@ -34,6 +34,7 @@ t_babies = sa.Table('babies', metadata,
 	sa.Column('gender', pg.TEXT, key=u'gender', doc=''),
 	sa.Column('dob', pg.DATE, nullable=False, key=u'dob', doc=''),
 	sa.Column('parent_id', pg.UUID, nullable=False, key=u'parentId', doc=''),
+	sa.Column('info', pg.TEXT, nullable=True, key=u'info', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, key=u'createdAt', doc=''),
 	sa.ForeignKeyConstraint([u'parentId'], [u'users.userId']),
 )
