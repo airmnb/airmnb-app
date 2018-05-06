@@ -12,7 +12,7 @@ from . import _helper as helper
 _name = '/' + __file__.split('/')[-1].split('.')[0]
 
 
-@bp.route(_name + '/', methods=['POST'])
+@bp.route(_name, methods=['POST'])
 @api
 @caps()
 def create_new_booking():

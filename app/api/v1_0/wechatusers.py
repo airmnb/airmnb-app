@@ -11,7 +11,7 @@ from . import _helper as helper
 
 _name = '/' + __file__.split('/')[-1].split('.')[0]
 
-@bp.route(_name + '/', methods=['GET'])
+@bp.route(_name, methods=['GET'])
 @api
 @caps()
 def get_wechatusers():
@@ -25,7 +25,7 @@ def get_wechatuser_by_openid(openId):
 	user = m.WechatUser.query.filter(m.WechatUser.openId == openId).one()
 	return jsonify(users=m.WechatUser.dump(user))
 
-@bp.route(_name + '/', methods=['POST'])
+@bp.route(_name, methods=['POST'])
 @api
 @caps()
 def create_wechatuser():

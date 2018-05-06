@@ -12,7 +12,7 @@ from . import _helper as helper
 _name = '/' + __file__.split('/')[-1].split('.')[0]
 
 
-@bp.route(_name + '/', methods=['GET'])
+@bp.route(_name, methods=['GET'])
 @api
 @caps()
 def get_activities():
@@ -30,7 +30,7 @@ def check_location_existence(data, key, locationId):
 		raise ValueError(_('location \'{0}\' is not found').format(locationId))
 
 
-@bp.route(_name + '/', methods=['POST'])
+@bp.route(_name, methods=['POST'])
 @api
 @caps()
 def create_new_activity():
