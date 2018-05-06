@@ -253,7 +253,7 @@ def create_app(config_name):
 		return redirect(location=url_for('catch_all', _external=True))
 
 
-	@app.route('/sys/debug')
+	@app.route('/sys/debug', methods=['OPTIONS','GET', 'POST', 'PUT', 'DELETE'])
 	def debug():
 		buf = []
 		for k, v in sorted(os.environ.items()):
