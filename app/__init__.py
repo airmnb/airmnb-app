@@ -93,8 +93,10 @@ def create_app(config_name):
 
 			# DEBUG SHORTCUT
 			if os.environ.get('DEBUG') == auth_header:
-				fake_user = m.User.query.first()
+				ses = m.Session.query.first()
+				fake_user = m.User.query.get(ses.userId)
 				g.current_user = fake_user
+				g.session_id = ses.sessionId
 				return None
 
 			if not auth_header.startswith('Bearer '):
@@ -299,6 +301,15 @@ def create_app(config_name):
 				return jsonify(user=m.User.dump(user))
 		return make_response('Bad request', 400)
 
+
+	@app.route('/public/images/<imageId>')
+	def get_image(imageId):
+		img = m.Image.query.get(imageId)
+		if not img:
+			return make_response('image not found', 404)
+		return make_response(image.body, 200, {'Content-Type': img.mimeType,
+			'Content-Length': image.blob.length})
+
 	@app.route('/sys/login')
 	def login():
 		identity_provider = request.args.get('use', '')
@@ -326,7 +337,6 @@ def create_app(config_name):
 		return redirect(location='/')
 
 
-	@app.route('/sys/session')
 	@app.route('/sys/whoami')
 	def whoami():
 		userId = g.current_user.userId
@@ -356,7 +366,7 @@ def create_app(config_name):
 	@app.route('/', defaults={'path': ''})
 	@app.route('/<path:path>')
 	def catch_all(path):
-		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')):
+		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')) or request.path.startswith('/public/'):
 			return send_file('index.html', cache_timeout=0)
 		return make_response('Not found', 404)
 
