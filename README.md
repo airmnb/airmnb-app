@@ -33,6 +33,20 @@ Plese use following command to create database
 createdb airmmb
 ```
 
+Reset database, in case of we change some schemas but hard to do auto migration.
+```
+db
+
+# in postgres
+
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+\q
+```
+
 #### Setup env vars
 
 Create a `env` file in the directory root path and edit required env vars like `AMB_DATABASE_URI`.

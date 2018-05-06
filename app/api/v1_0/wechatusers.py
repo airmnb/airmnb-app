@@ -60,7 +60,7 @@ def create_wechatuser():
 	SS.add(user)
 	SS.flush()
 
-	return jsonify(message=_('created location {0} successfully'
+	return jsonify(message=_('created wechat user {0} successfully'
 		).format(wechatUser.id),
 		wechatUser=m.WechatUser.dump(wechatUser),
 		user=m.User.dump(user),

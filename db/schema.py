@@ -6,24 +6,40 @@ metadata = sa.MetaData()
 
 
 ##########################################################################
-
-t_wechat_users = sa.Table('wechat_users', metadata,
-	sa.Column('wechat_user_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'wechatUserId', doc=''),
-	sa.Column('open_id', pg.TEXT, nullable=False, key=u'openId', doc=''),
-	sa.Column('avartar_url', pg.TEXT, nullable=True, key=u'avartarUrl', doc=''),
-	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
-)
-
+# Amb user account, it's also a customer account. We assume every account can be a consumer.
 t_users = sa.Table('users', metadata,
 	sa.Column('user_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'userId', doc=''),
+	sa.Column('account_name', pg.TEXT, nullable=False, unique=True, key=u'accountName', doc=''),
+	sa.Column('password', pg.TEXT, nullable=False, unique=True, key=u'password', doc=''),
+	sa.Column('source', pg.SMALLINT, nullable=False, key=u'source', doc='local 1, Facebook: 4, WeChat: 6, WeApp: 8, Google: 9'),
 	sa.Column('email', pg.TEXT, nullable=True, key=u'email', doc=''),
-	sa.Column('nick_name', pg.TEXT, nullable=True, key=u'nickName', doc=''),
+	sa.Column('phone', pg.TEXT, nullable=True, key=u'phone', doc=''),
 	sa.Column('family_name', pg.TEXT, nullable=True, key=u'familyName', doc=''),
 	sa.Column('given_name', pg.TEXT, nullable=True, key=u'givenName', doc=''),
 	sa.Column('full_name', pg.TEXT, nullable=True, key=u'fullName', doc=''),
-	sa.Column('gender', pg.TEXT, nullable=True, key=u'gender', doc=''),
+	sa.Column('gender', pg.BOOLEAN, nullable=True, key=u'gender', doc=''),
 	sa.Column('dob', pg.DATE, nullable=True, key=u'dob', doc=''),
+	sa.Column('avatar_image_id', pg.UUID, nullable=True, key=u'avatarImageId', doc=''),
+	sa.Column('last_access_at', pg.TIMESTAMP(timezone=True), nullable=False, key=u'lastAccessAt', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+	sa.ForeignKeyConstraint([u'avatarImageId'], [u'images.imageId']),
+)
+
+# Extension table if a user account is signed up from weapp
+t_wechat_users = sa.Table('wechat_users', metadata,
+	sa.Column('wechat_user_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'wechatUserId', doc=''),
+	sa.Column('open_id', pg.TEXT, nullable=False, key=u'openId', doc=''),
+	sa.Column('avatar_url', pg.TEXT, nullable=True, key=u'avatarUrl', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+)
+
+# Extension table if a user is a provider
+t_providers = sa.Table('providers', metadata,
+	sa.Column('provider_id', pg.UUID, primary_key=True, key=u'providerId', doc=''),
+	sa.Column('certificates', pg.TEXT, nullable=True, key=u'certificates', doc=''),
+	sa.Column('info', pg.TEXT, nullable=False, key=u'info', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+	sa.ForeignKeyConstraint([u'providerId'], [u'users.userId']),
 )
 
 t_babies = sa.Table('babies', metadata,
@@ -35,13 +51,15 @@ t_babies = sa.Table('babies', metadata,
 	sa.Column('dob', pg.DATE, nullable=False, key=u'dob', doc=''),
 	sa.Column('parent_id', pg.UUID, nullable=False, key=u'parentId', doc=''),
 	sa.Column('info', pg.TEXT, nullable=True, key=u'info', doc=''),
-	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, key=u'createdAt', doc=''),
+	sa.Column('avatar_image_id', pg.UUID, nullable=True, key=u'avatarImageId', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 	sa.ForeignKeyConstraint([u'parentId'], [u'users.userId']),
+	sa.ForeignKeyConstraint([u'avatarImageId'], [u'images.imageId']),
 )
 
-t_locations = sa.Table('locations', metadata,
-	sa.Column('location_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'locationId', doc=''),
-	sa.Column('langitude', pg.DOUBLE_PRECISION, nullable=False, key=u'langitude', doc=''),
+t_venues = sa.Table('venues', metadata,
+	sa.Column('venue_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'venueId', doc=''),
+	sa.Column('longitude', pg.DOUBLE_PRECISION, nullable=False, key=u'longitude', doc=''),
 	sa.Column('latitude', pg.DOUBLE_PRECISION, nullable=False, key=u'latitude', doc=''),
 	sa.Column('addr1', pg.TEXT, nullable=False, key=u'addr1', doc=''),
 	sa.Column('addr2', pg.TEXT, key=u'addr2', doc=''),
@@ -50,14 +68,22 @@ t_locations = sa.Table('locations', metadata,
 	sa.Column('state', pg.TEXT, nullable=False, key=u'state', doc=''),
 	sa.Column('country', pg.TEXT, nullable=False, key=u'country', doc=''),
 	sa.Column('postcode', pg.TEXT, key=u'postcode', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 )
+
+# t_venues_images = sa.Table('venues_images', metadata,
+# 	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
+# 	sa.Column('image_id', pg.UUID, nullable=False, key=u'imageId', doc=''),
+# 	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
+# 	sa.ForeignKeyConstraint([u'imageId'], [u'images.imageId']),
+# )
 
 t_activities = sa.Table('activities', metadata,
 	sa.Column('activity_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'activityId', doc=''),
 	sa.Column('name', pg.TEXT, nullable=False, key=u'name', doc=''),
 	sa.Column('description', pg.TEXT, key=u'description', doc=''),
-	sa.Column('location_id', pg.UUID, nullable=False, key=u'locationId', doc=''),
-	sa.ForeignKeyConstraint([u'locationId'], [u'locations.locationId']),
+	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
+	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
 )
 
 t_sessions = sa.Table('sessions', metadata,
@@ -67,6 +93,7 @@ t_sessions = sa.Table('sessions', metadata,
 	sa.Column('access_token', pg.TEXT, key=u'accessToken', doc=''),
 	sa.Column('access_token_expires_at', pg.TIMESTAMP(timezone=True), key=u'accessTokenExpiresAt', doc=''),
 	sa.Column('refresh_token', pg.TEXT, key=u'refreshToken', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 	# TODo: add more fields in session
 	sa.ForeignKeyConstraint([u'userId'], [u'users.userId']),
 )
@@ -75,7 +102,8 @@ t_images = sa.Table('images', metadata,
 	sa.Column('image_id', pg.UUID, primary_key=True, server_default=sa.text('uuid_generate_v4()'), key=u'imageId', doc=''),
 	sa.Column('blob', pg.BYTEA, nullable=False, key=u'blob', doc=''),
 	sa.Column('mime', pg.TEXT, nullable=True, key=u'mimeType', doc=''),
-	sa.Column('filename', pg.TEXT, nullable=True, key=u'filename', doc=''),
+	sa.Column('linked', pg.BOOLEAN, nullable=False, server_default=sa.text('False'), key=u'linked', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 )
 
 ##########################################################################

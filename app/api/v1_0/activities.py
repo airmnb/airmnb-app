@@ -25,9 +25,9 @@ def check_uuid_availability(data, key, activityId):
 		raise ValueError(_('activityId \'{0}\' is already in use').format(activityId))
 
 
-def check_location_existence(data, key, locationId):
-	if not m.Location.query.get(locationId):
-		raise ValueError(_('location \'{0}\' is not found').format(locationId))
+def check_venue_existence(data, key, venueId):
+	if not m.Venue.query.get(venueId):
+		raise ValueError(_('venue \'{0}\' is not found').format(venueId))
 
 
 @bp.route(_name, methods=['POST'])
@@ -46,10 +46,10 @@ def create_new_activity():
 			validators.non_blank,
 		]),
 		Field('description'),
-		Field('locationId', is_mandatory=True,
+		Field('venueId', is_mandatory=True,
 			validators=[
 				helper.check_uuid_is_valid,
-				check_location_existence,
+				check_venue_existence,
 		]),
 	).get_data(copy=True)
 

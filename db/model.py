@@ -94,24 +94,24 @@ class BabySchema(Schema):
 			'dob', 'parentId', 'createdAt')
 
 
-class Location(Base):
-	__table__ = t_locations
+class Venue(Base):
+	__table__ = t_venues
 
 
-class LocationSchema(Schema):
+class VenueSchema(Schema):
 	class Meta:
-		fields = ('locationId', 'langitude', 'latitude', 'addr1', 'addr2', 'addr3', 'city', 'state', 'country', 'postcode')
+		fields = ('venueId', 'longitude', 'latitude', 'addr1', 'addr2', 'addr3', 'city', 'state', 'country', 'postcode')
 
 
 class Activity(Base):
 	__table__ = t_activities
-	location = relationship(Location)
+	venue = relationship(Venue)
 
 
 class ActivitySchema(Schema):
-	location = fields.Nested('LocationSchema')
+	venue = fields.Nested('VenueSchema')
 	class Meta:
-		fields = ('activityId', 'name', 'description', 'location')
+		fields = ('activityId', 'name', 'description', 'venue')
 
 
 class Session(Base):

@@ -15,22 +15,22 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @bp.route(_name, methods=['GET'])
 @api
 @caps()
-def get_locations():
-	locations = m.Location.query.order_by(m.Location.locationId).all()
-	return jsonify(locations=m.Location.dump(locations))
+def get_venues():
+	venues = m.Venue.query.order_by(m.Venue.venueId).all()
+	return jsonify(venues=m.Venue.dump(venues))
 
 
-def check_uuid_availability(data, key, locationId):
-	if m.Location.query.get(locationId):
-		raise ValueError(_('locationId \'{0}\' is already in use').format(locationId))
+def check_uuid_availability(data, key, venueId):
+	if m.Venue.query.get(venueId):
+		raise ValueError(_('venueId \'{0}\' is already in use').format(venueId))
 
 
 @bp.route(_name, methods=['POST'])
 @api
 @caps()
-def create_new_location():
+def create_new_venue():
 	data = MyForm(
-		Field('locationId', is_mandatory=True,
+		Field('venueId', is_mandatory=True,
 			default=lambda: helper.generate_new_uuid(),
 			normalizer=helper.normalize_uuid,
 			validators=[
@@ -63,22 +63,22 @@ def create_new_location():
 		]),
 	).get_data(copy=True)
 
-	location = m.Location(**data)
-	SS.add(location)
+	venue = m.Venue(**data)
+	SS.add(venue)
 	SS.flush()
 
-	return jsonify(message=_('created location {0} successfully'
-		).format(location.locationId),
-		location=m.Location.dump(location),
+	return jsonify(message=_('created venue {0} successfully'
+		).format(venue.venueId),
+		venue=m.Venue.dump(venue),
 	)
 
 
-@bp.route(_name + '/<locationId>', methods=['GET'])
+@bp.route(_name + '/<venueId>', methods=['GET'])
 @api
 @caps()
-def get_location(locationId):
-	location = m.Location.query.get(locationId)
-	if not location:
-		raise InvalidUsage(_('location {0} not found').format(loctionId), 404)
-	return jsonify(location=m.Location.dump(location))
+def get_venue(venueId):
+	venue = m.Venue.query.get(venueId)
+	if not venue:
+		raise InvalidUsage(_('venue {0} not found').format(venueId), 404)
+	return jsonify(venue=m.Venue.dump(venue))
 
