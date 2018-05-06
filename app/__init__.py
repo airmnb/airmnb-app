@@ -266,7 +266,7 @@ def create_app(config_name):
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
 
-	@app.route('/sys/login/weapp')
+	@app.route('/sys/login/weapp/')
 	def weapp_login():
 		# https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html#wxloginobject
 		code = request.args['code']
