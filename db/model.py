@@ -64,15 +64,6 @@ _names = set(locals().keys()) | {'_names'}
 #
 ##########################################################################
 
-# WechatUser
-class WechatUser(Base):
-	__table__ = t_wechat_users
-
-class WechatUserSchema(Schema):
-	class Meta:
-		fields = ('id', 'openId', 'avartarUrl', 'createdAt')
-
-
 # User
 class User(Base):
 	__table__ = t_users
@@ -80,8 +71,25 @@ class User(Base):
 
 class UserSchema(Schema):
 	class Meta:
-		fields = ('userId', 'nickName', 'familyName', 'givenName', 'fullName', 'gender',
-			'dob', 'createdAt')
+		fields = ('userId','accountName', 'password', 'source', 
+			'email', 'phone', 'familyName', 'givenName', 'fullName',
+			'gender', 'dob', 'avatarImageId', 'lastAccessAt', 'createdAt')
+
+# WechatUser
+class WechatUser(Base):
+	__table__ = t_wechat_users
+
+class WechatUserSchema(Schema):
+	class Meta:
+		fields = ('wechatUserId', 'openId', 'avatarUrl', 'createdAt')
+
+# Provider
+class Provider(Base): 
+	__table__ = t_providers
+
+class ProviderSchema(Schema):
+	class Meta:
+		fields = ('providerId', 'certificates', 'info', 'createdAt')
 
 # Baby
 class Baby(Base):
@@ -90,30 +98,29 @@ class Baby(Base):
 
 class BabySchema(Schema):
 	class Meta:
-		fields = ('babyId', 'familyName', 'givenName', 'gender',
-			'dob', 'parentId', 'createdAt')
+		fields = ('babyId', 'familyName', 'givenName', 'fullName',
+		 'gender', 'dob', 'parentId', 'info', 'avatarImageId', 'createdAt')
 
-
+# Venue
 class Venue(Base):
 	__table__ = t_venues
 
-
 class VenueSchema(Schema):
 	class Meta:
-		fields = ('venueId', 'longitude', 'latitude', 'addr1', 'addr2', 'addr3', 'city', 'state', 'country', 'postcode')
+		fields = ('venueId', 'longitude', 'latitude', 'addr1', 'addr2', 
+		'addr3', 'city', 'state', 'country', 'postcode', 'createdAt')
 
-
+# Activity
 class Activity(Base):
 	__table__ = t_activities
 	venue = relationship(Venue)
-
 
 class ActivitySchema(Schema):
 	venue = fields.Nested('VenueSchema')
 	class Meta:
 		fields = ('activityId', 'name', 'description', 'venue')
 
-
+# Session
 class Session(Base):
 	__table__ = t_sessions
 	user = relationship(User)
@@ -123,10 +130,9 @@ class SessionSchema(Schema):
 	class Meta:
 		fields = ('sessionId', 'userId', 'accessToken', 'refreshToken')
 
-
+# Image
 class Image(Base):
 	__table__ = t_images
-
 
 class ImageSchema(Schema):
 	class Meta:
