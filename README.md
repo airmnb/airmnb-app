@@ -19,7 +19,7 @@ Please make sure following prerequisites are all installed.
 ```
 $ git clone https://github.com/airmnb/airmnb-app
 $ cd airmnb-app
-$ virtualenv venv
+$ virtualenv --python=python3.6 venv
 $ . venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
@@ -87,7 +87,7 @@ python3 manage.py db upgrade head
 
 ### Add convenience commands
 
-For your convenience, you can create an alias command in your .bash_profile to quickly jump to your working folder. For example, if you have cloned the repo to `~/airmnb-python-backend` and you want to use a shortcut `aa`, then you can add:
+For your convenience, you can create an alias command in your .bash_profile to quickly jump to your working folder. For example, if you have cloned the repo to `~/airmnb-app` and you want to use a shortcut `aa`, then you can add:
 
 ```
 alias aa='cd ~/airmnb-app; . venv/bin/activate; . setenv.sh'
