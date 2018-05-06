@@ -36,9 +36,12 @@ def update_user(userId):
 	if not user:
 		raise InvalidUsage(_('user {0} not found').format(userId), 404)
 	data = MyForm(
+		Field('accountName'),
 		Field('fullName'),
 		Field('gender'),
 		Field('dob'),
+		Field('email'),
+		Field('phone'),
 	).get_data()
 	for k, v in data.items():
 		setattr(user, k, v)

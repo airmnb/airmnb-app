@@ -38,7 +38,7 @@ def create_new_venue():
 				check_uuid_availability,
 		]),
 		# TODO: validate coordinates and/or other values
-		Field('langitude', is_mandatory=True, default=lambda: 0),
+		Field('longitude', is_mandatory=True, default=lambda: 0),
 		Field('latitude', is_mandatory=True, default=lambda: 0),
 		Field('addr1', is_mandatory=True, validators=[
 			validators.non_blank,
