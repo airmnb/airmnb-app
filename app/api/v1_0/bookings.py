@@ -18,7 +18,7 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 def create_new_booking():
 	return jsonify(message=_('created booking {0} successfully'
 		).format('newbooking'),
-		items=[dict(name='stub')],
+		booking=dict(name='stub'),
 	)
 
 
@@ -26,19 +26,19 @@ def create_new_booking():
 @api
 @caps()
 def get_booking(bookingId):
-	return jsonify(items=[dict(name='tbd', bookingId=bookingId)])
+	return jsonify(booking=dict(name='tbd', bookingId=bookingId))
 
 
 @bp.route(_name + '/<bookingId>', methods=['PUT'])
 @api
 @caps()
 def update_booking():
-	return jsonify(items=[dict(name='tbd', bookingId=bookingId)])
+	return jsonify(booking=dict(name='tbd', bookingId=bookingId))
 
 
 @bp.route(_name + '/<bookingId>/feedback', methods=['POST'])
 @api
 @caps()
-def create_booking_comment():
-	return jsonify(items=[dict(bookingId=bookingId, comment='something')])
+def create_booking_feedback():
+	return jsonify(feedback=dict(bookingId=bookingId, comment='something'))
 

@@ -17,7 +17,7 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @caps()
 def get_activities():
 	activities = m.Activity.query.order_by(m.Activity.name).all()
-	return jsonify(items=m.Activity.dump(activities))
+	return jsonify(activities=m.Activity.dump(activities))
 
 
 def check_uuid_availability(data, key, activityId):
@@ -59,7 +59,7 @@ def create_new_activity():
 
 	return jsonify(message=_('created activity {0} successfully'
 		).format(activity.activityId),
-		items=[m.Activity.dump(activity)],
+		activity=m.Activity.dump(activity),
 	)
 
 
@@ -70,7 +70,7 @@ def get_activity(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
 		raise InvalidUsage(_('activity {0} not found').format(activityId), 404)
-	return jsonify(items=[m.Activity.dump(activity)])
+	return jsonify(activity=m.Activity.dump(activity))
 
 
 @bp.route(_name + '/<activityId>', methods=['DELETE'])
