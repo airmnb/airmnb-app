@@ -197,6 +197,7 @@ def create_app(config_name):
 				# user does not exist, create it
 				user = m.User(
 					source= 9,
+					accountName = email,
 					familyName=data['family_name'],
 					givenName=data['given_name'],
 					# gender

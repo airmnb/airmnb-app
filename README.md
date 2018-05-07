@@ -72,8 +72,13 @@ source setenv.sh
 Then you can verify it by running:
 ```
 psql ${AMB_DATABASE_URI}
+
 ```
-This should open psql and connect to the database you created. Then enter ```\q``` to quit.
+In postgres database, run below
+```
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+This should open psql and connect to the database you created. Then enter `\q` to quit.
 
 
 #### Initialize database for database migration
@@ -81,7 +86,7 @@ This should open psql and connect to the database you created. Then enter ```\q`
 If you just created database, it hasn't been initialized yet. Run following command:
 
 ```
-python manage.py db downgrade base
+downgrade base
 ```
 
 This step is only needed for the first time after installation. It will create a table in public schema called 'alembic_version'. If 
@@ -91,7 +96,7 @@ you have run this before, then you shouldn't run this command again, otherwise t
 
 You may upgrade the db schema to the latest version by running:
 ```
-python3 manage.py db upgrade head
+upgrade head
 ```
 
 ### Add convenience commands
@@ -113,7 +118,7 @@ start
 
 When server is running, you can test api by running:
 ```
-curl localhost:5000/sys/health-check
+curl localhost:5000/sys/health_check
 ```
 
 This should return status code 200 and a text says 'OK'.
