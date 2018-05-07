@@ -29,7 +29,7 @@ def create_new_image():
 	blob = dataFile.read()
 	filename = dataFile.filename
 	mimeType, encoding = mimetypes.guess_type(filename)
-	image = m.Image(blob=blob, mimeType=mimeType, filename=filename)
+	image = m.Image(blob=blob, mimeType=mimeType)
 	SS.add(image)
 	SS.flush()
 	return jsonify(image=m.Image.dump(image))

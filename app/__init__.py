@@ -79,8 +79,10 @@ def create_app(config_name):
 
 	@app.before_request
 	def authenticate_request():
-		if os.environ.get('DEBUG') and request.method == 'OPTIONS':
+		if request.method == 'OPTIONS':
 			return make_response('', 200)
+		# if os.environ.get('AMB_DEBUG_HEADER'):
+		# 	return None 
 
 		for i, p in enumerate(public_url_patterns):
 			if p.match(request.path):
