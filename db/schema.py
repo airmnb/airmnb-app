@@ -10,7 +10,7 @@ metadata = sa.MetaData()
 t_users = sa.Table('users', metadata,
 	sa.Column('user_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'userId', doc=''),
 	sa.Column('account_name', pg.TEXT, nullable=True, unique=True, key=u'accountName', doc=''),
-	sa.Column('password', pg.TEXT, nullable=False, key=u'password', doc=''),
+	sa.Column('password', pg.TEXT, nullable=True, key=u'password', doc=''),
 	sa.Column('source', pg.SMALLINT, nullable=False, key=u'source', doc='local 1, Facebook: 4, WeChat: 6, WeApp: 8, Google: 9'),
 	sa.Column('email', pg.TEXT, nullable=True, key=u'email', doc=''),
 	sa.Column('phone', pg.TEXT, nullable=True, key=u'phone', doc=''),
