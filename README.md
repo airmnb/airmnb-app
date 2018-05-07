@@ -109,6 +109,12 @@ alias aa='cd ~/airmnb-app; . venv/bin/activate; . setenv.sh'
 
 ### Start server
 
+If the web project isn't ready, you can run below command to bring up the temp login page.
+```
+cp app/dev/ app/static
+cp app/static/index.html app/index.html
+```
+
 After you have setup database, you can start the server by running:
 ```
 start
