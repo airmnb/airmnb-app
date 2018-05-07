@@ -98,8 +98,8 @@ class Baby(Base):
 
 class BabySchema(Schema):
 	class Meta:
-		fields = ('babyId', 'familyName', 'givenName', 'fullName',
-		 'gender', 'dob', 'parentId', 'info', 'avatarImageId', 'createdAt')
+		fields = ('babyId', 'nickName', 'familyName', 'givenName', 'fullName',
+		 'gender', 'dob', 'creatorId', 'info', 'avatarImageId', 'createdAt')
 
 # Venue
 class Venue(Base):
