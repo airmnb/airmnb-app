@@ -24,13 +24,22 @@ $ . venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
+### Prepare the env file
+Get your `env` file ready in the same location. You need to ask team to get this secret settings.
+Once you have the `env` file,
+run below command
+
+```
+. setenv.sh
+```
+
 ### Setup Database
 
 #### Create database
 
-Plese use following command to create database
+Plese use following command to create database. Type in the database user's password if prompted.
 ```
-createdb airmmb
+createdb -h localhost -p 5432 -U postgres -W airmnb
 ```
 
 Reset database, in case of we change some schemas but hard to do auto migration.

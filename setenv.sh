@@ -1,34 +1,13 @@
-
-export AMB_DATABASE_URI=postgres://*
-# For non China
-export AMB_DOMAIN_NAME=
-
-export AMB_FACEBOOK_APP_KEY=
-export AMB_FACEBOOK_APP_SECRET=
-export AMB_FACEBOOK_AUTHORIZE_URL=https://www.facebook.com/dialog/oauth
-export AMB_FACEBOOK_ACCESS_TOKEN_URL=/oauth/access_token
-
-export AMB_GOOGLE_APP_KEY=
-export AMB_GOOGLE_APP_SECRET=
-export AMB_GOOGLE_AUTHORIZE_URL=https://accounts.google.com/o/oauth2/v2/auth
-export AMB_GOOGLE_ACCESS_TOKEN_URL=https://www.googleapis.com/oauth2/v4/token
-
-export AMB_WECHAT_APP_KEY=
-export AMB_WECHAT_APP_SECRET=
-
-export AMB_WEAPP_APP_ID=
-export AMB_WEAPP_APP_SECRET=
-
-export DEBUG=
-
 FILE_DIR=$(dirname "${BASH_SOURCE}")
-
 #
 # load development settings from `env` if it exists
 #
 LOCAL_ENV="${FILE_DIR}/env"
 if [ -e "${LOCAL_ENV}" ]; then
 	source "${LOCAL_ENV}"
+else
+	echo -e "\033[0;31m${LOCAL_ENV} isn't configured.\033[0m"
+	return
 fi
 
 echo -e "\033[1;32mAMB_DATABASE_URI: \033[0;36m${AMB_DATABASE_URI}\033[0m"
