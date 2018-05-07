@@ -204,6 +204,7 @@ def create_app(config_name):
 					# dob
 					fullName=data['name'],
 					email=data['email'],
+					lastAccessAt = datetime.datetime.utcnow(),
 				)
 				SS.add(user)
 				SS.commit()
@@ -230,6 +231,7 @@ def create_app(config_name):
 					givenName=data['first_name'],
 					fullName=data['name'],
 					email=data['email'],
+					lastAccessAt = datetime.datetime.utcnow(),
 				)
 				SS.add(user)
 				SS.commit()
@@ -295,7 +297,8 @@ def create_app(config_name):
 					})
 					user = m.User(**{
 						'userId': userid,
-						'source': 8
+						'source': 8,
+						lastAccessAt = datetime.datetime.utcnow(),
 					})
 					SS.add(wechatUser)
 					SS.add(user)
