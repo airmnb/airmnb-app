@@ -298,7 +298,7 @@ def create_app(config_name):
 					user = m.User(**{
 						'userId': userid,
 						'source': 8,
-						lastAccessAt: datetime.datetime.utcnow(),
+						'lastAccessAt': datetime.datetime.utcnow(),
 					})
 					SS.add(wechatUser)
 					SS.add(user)
