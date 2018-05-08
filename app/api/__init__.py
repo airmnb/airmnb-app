@@ -99,7 +99,7 @@ class validators:
 			raise ValueError(_('mandatory parameter missing'))
 	@classmethod
 	def non_blank(cls, data, key, value):
-		if not isinstance(value, basestring) or not value.strip():
+		if not isinstance(value, str) or not value.strip():
 			raise ValueError(_('must be non-blank string'))
 	@classmethod
 	def enum(cls, data, key, value, *options):
@@ -131,7 +131,7 @@ class validators:
 	def is_string(cls, data, key, value, length=None, max_length=None,
 			min_length=None):
 		if value is not None:
-			if not isinstance(value, basestring):
+			if not isinstance(value, str):
 				raise ValueError(_('value must of a string'))
 			if length is not None and len(value) != length:
 				raise ValueError(_('value length must be {0}'
