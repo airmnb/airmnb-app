@@ -11,15 +11,6 @@ from . import _helper as helper
 
 _name = '/' + __file__.split('/')[-1].split('.')[0]
 
-
-@bp.route(_name, methods=['GET'])
-@api
-@caps()
-def get_venues():
-	venues = m.Venue.query.order_by(m.Venue.venueId).all()
-	return jsonify(venues=m.Venue.dump(venues))
-
-
 def check_uuid_availability(data, key, venueId):
 	if m.Venue.query.get(venueId):
 		raise ValueError(_('venueId \'{0}\' is already in use').format(venueId))
@@ -72,6 +63,16 @@ def create_new_venue():
 		venue=m.Venue.dump(venue),
 	)
 
+@bp.route(_name, methods=['GET'])
+@api
+@caps()
+def get_venues():
+	providerId = request.args.get('providerId')
+	if providerId:
+		venues = m.Venue.query.filter(m.Venue.providerId == providerId).order_by(m.Venue.createdAt).all()
+	else:
+		venues = m.Venue.query.order_by(m.Venue.createdAt).all()
+	return jsonify(venues=m.Venue.dump(venues))
 
 @bp.route(_name + '/<venueId>', methods=['GET'])
 @api
