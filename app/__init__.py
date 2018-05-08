@@ -333,8 +333,11 @@ def create_app(config_name):
 		image = m.Image.query.get(imageId)
 		if not image:
 			return make_response('image not found', 404)
-		return make_response(image.blob, 200, {'Content-Type': image.mimeType,
-			'Content-Length': len(image.blob)})
+		return make_response(image.blob, 200, {
+			'Content-Type': image.mimeType,
+			'Content-Length': len(image.blob),
+			'Cache-Control': 'public, immutable',
+		})
 
 	@app.route('/sys/login')
 	def login():
