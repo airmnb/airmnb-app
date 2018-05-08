@@ -63,6 +63,18 @@ def get_baby(babyId):
 	return jsonify(baby=m.Baby.dump(baby))
 
 
+@bp.route(_name + '/<babyId>', methods=['DELETE'])
+@api
+@caps()
+def delete_baby(babyId):
+	baby = m.Baby.query.get(babyId)
+	if not baby:
+		raise InvalidUsage(_('baby {0} not found').format(babyId), 404)
+	SS.delete(baby)
+	return jsonify(message=_('baby {0} was deleted successfully'
+		).format(babyId))
+
+
 @bp.route(_name + '/<babyId>', methods=['PUT'])
 @api
 @caps()
