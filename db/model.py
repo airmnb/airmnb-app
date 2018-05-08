@@ -108,7 +108,7 @@ class Venue(Base):
 class VenueSchema(Schema):
 	class Meta:
 		fields = ('venueId', 'name', 'longitude', 'latitude', 'addr1', 'addr2', 
-		'addr3', 'city', 'state', 'country', 'postcode', 'providerId', 'createdAt')
+		'addr3', 'city', 'state', 'country', 'postcode', 'info', 'providerId', 'createdAt')
 
 # Activity
 class Activity(Base):
