@@ -69,7 +69,9 @@ t_venues = sa.Table('venues', metadata,
 	sa.Column('state', pg.TEXT, nullable=False, key=u'state', doc=''),
 	sa.Column('country', pg.TEXT, nullable=False, key=u'country', doc=''),
 	sa.Column('postcode', pg.TEXT, key=u'postcode', doc=''),
+	sa.Column('provider_id', pg.UUID, nullable=False, key=u'providerId', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+	sa.ForeignKeyConstraint([u'providerId'], [u'users.userId']),
 )
 
 # t_venues_images = sa.Table('venues_images', metadata,
