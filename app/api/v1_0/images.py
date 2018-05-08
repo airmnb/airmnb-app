@@ -1,7 +1,7 @@
 
 import mimetypes
 
-from flask import request, session, jsonify
+from flask import request, session, jsonify, g
 import psycopg2
 
 import db.model as m
@@ -18,6 +18,7 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @api
 @caps()
 def create_new_image():
+	user = g.current_user
 	data = MyForm(
 		Field('dataFile', is_mandatory=True,
 			validators=[
@@ -28,7 +29,7 @@ def create_new_image():
 	blob = dataFile.read()
 	filename = dataFile.filename
 	mimeType, encoding = mimetypes.guess_type(filename)
-	image = m.Image(blob=blob, mimeType=mimeType)
+	image = m.Image(blob=blob, mimeType=mimeType, creatorId = user.userId)
 	SS.add(image)
 	SS.flush()
 	return jsonify(image=m.Image.dump(image))

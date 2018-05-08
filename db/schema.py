@@ -107,8 +107,10 @@ t_images = sa.Table('images', metadata,
 	sa.Column('image_id', pg.UUID, primary_key=True, server_default=sa.text('uuid_generate_v4()'), key=u'imageId', doc=''),
 	sa.Column('blob', pg.BYTEA, nullable=False, key=u'blob', doc=''),
 	sa.Column('mime', pg.TEXT, nullable=True, key=u'mimeType', doc=''),
+	sa.Column('creator_id', pg.UUID, nullable=False, key=u'creatorId', doc=''),
 	sa.Column('linked', pg.BOOLEAN, nullable=False, server_default=sa.text('False'), key=u'linked', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+	sa.ForeignKeyConstraint([u'creatorId'], [u'users.userId']),
 )
 
 ##########################################################################
