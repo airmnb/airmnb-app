@@ -366,6 +366,10 @@ def create_app(config_name):
 		return redirect(location='/')
 
 
+	@app.route('/sys/whoami', methods=['OPTIONS'])
+	def whoami_options():
+		return make_response('', 200, {'Access-Control-Allow-Origin': '*'})
+
 	@app.route('/sys/whoami')
 	def whoami():
 		userId = g.current_user.userId
