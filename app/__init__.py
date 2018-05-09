@@ -28,7 +28,7 @@ def create_app(config_name):
 	app.config.from_object(config[config_name])
 	config[config_name].init_app(app)
 	db.init_app(app)
-	CORS(app, resources={'/api/1.0/*': {'origins': '*'}, '/sys/*': {'origins': '*'}})
+	# CORS(app, resources={'/api/1.0/*': {'origins': '*'}, '/sys/*': {'origins': '*'}})
 
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
@@ -396,7 +396,8 @@ def create_app(config_name):
 	@app.route('/<path:path>')
 	def catch_all(path):
 		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')) or request.path.startswith('/public/'):
-			return send_file('index.html', cache_timeout=0)
+			# return send_file('index.html', cache_timeout=0)
+			return redirect(location="http://localhost:3000")
 		return make_response('Not found', 404)
 
 	return app
