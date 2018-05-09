@@ -101,7 +101,7 @@ def create_app(config_name):
 				g.session_id = ses.sessionId
 				return None
 
-			if not auth_header.startswith('Bearer '):
+			if not auth_header.lower().startswith('bearer '):
 				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
 			token = auth_header[7:]
 			print('decoded token from authoization header', token)
