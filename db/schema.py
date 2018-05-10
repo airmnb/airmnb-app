@@ -76,12 +76,12 @@ t_venues = sa.Table('venues', metadata,
 	sa.ForeignKeyConstraint([u'providerId'], [u'users.userId']),
 )
 
-# t_venues_images = sa.Table('venues_images', metadata,
-# 	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
-# 	sa.Column('image_id', pg.UUID, nullable=False, key=u'imageId', doc=''),
-# 	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
-# 	sa.ForeignKeyConstraint([u'imageId'], [u'images.imageId']),
-# )
+t_venues_images = sa.Table('venues_images', metadata,
+	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
+	sa.Column('image_id', pg.UUID, nullable=False, key=u'imageId', doc=''),
+	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
+	sa.ForeignKeyConstraint([u'imageId'], [u'images.imageId']),
+)
 
 t_activities = sa.Table('activities', metadata,
 	sa.Column('activity_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'activityId', doc=''),
