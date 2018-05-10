@@ -88,7 +88,7 @@ t_activities = sa.Table('activities', metadata,
 	sa.Column('name', pg.TEXT, nullable=False, key=u'name', doc=''),
 	sa.Column('description', pg.TEXT, key=u'description', doc=''),
 	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
-	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
+	# sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
 )
 
 t_sessions = sa.Table('sessions', metadata,
@@ -110,7 +110,6 @@ t_images = sa.Table('images', metadata,
 	sa.Column('creator_id', pg.UUID, nullable=False, key=u'creatorId', doc=''),
 	sa.Column('linked', pg.BOOLEAN, nullable=False, server_default=sa.text('False'), key=u'linked', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
-	sa.ForeignKeyConstraint([u'creatorId'], [u'users.userId']),
 )
 
 ##########################################################################

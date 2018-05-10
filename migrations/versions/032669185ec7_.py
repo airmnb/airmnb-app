@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0c4ead2654d5
+Revision ID: 032669185ec7
 Revises: 
-Create Date: 2018-05-10 20:55:00.103469
+Create Date: 2018-05-10 21:18:06.154263
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '0c4ead2654d5'
+revision = '032669185ec7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,24 +23,7 @@ def upgrade():
     sa.Column('name', sa.TEXT(), nullable=False),
     sa.Column('description', sa.TEXT(), nullable=True),
     sa.Column('venue_id', postgresql.UUID(), nullable=False),
-    sa.ForeignKeyConstraint(['venue_id'], ['venues.venue_id'], ),
     sa.PrimaryKeyConstraint('activity_id')
-    )
-    op.create_table('babies',
-    sa.Column('baby_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
-    sa.Column('family_name', sa.TEXT(), nullable=True),
-    sa.Column('given_name', sa.TEXT(), nullable=True),
-    sa.Column('nick_name', sa.TEXT(), nullable=True),
-    sa.Column('full_name', sa.TEXT(), nullable=True),
-    sa.Column('gender', sa.TEXT(), nullable=True),
-    sa.Column('dob', sa.DATE(), nullable=True),
-    sa.Column('creator_id', postgresql.UUID(), nullable=False),
-    sa.Column('info', sa.TEXT(), nullable=True),
-    sa.Column('avatar_image_id', postgresql.UUID(), nullable=True),
-    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['avatar_image_id'], ['images.image_id'], ),
-    sa.ForeignKeyConstraint(['creator_id'], ['users.user_id'], ),
-    sa.PrimaryKeyConstraint('baby_id')
     )
     op.create_table('images',
     sa.Column('image_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
@@ -49,27 +32,14 @@ def upgrade():
     sa.Column('creator_id', postgresql.UUID(), nullable=False),
     sa.Column('linked', sa.BOOLEAN(), server_default=sa.text('False'), nullable=False),
     sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['creator_id'], ['users.user_id'], ),
     sa.PrimaryKeyConstraint('image_id')
     )
-    op.create_table('providers',
-    sa.Column('provider_id', postgresql.UUID(), nullable=False),
-    sa.Column('certificates', sa.TEXT(), nullable=True),
-    sa.Column('info', sa.TEXT(), nullable=False),
+    op.create_table('wechat_users',
+    sa.Column('wechat_user_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
+    sa.Column('open_id', sa.TEXT(), nullable=False),
+    sa.Column('avatar_url', sa.TEXT(), nullable=True),
     sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['provider_id'], ['users.user_id'], ),
-    sa.PrimaryKeyConstraint('provider_id')
-    )
-    op.create_table('sessions',
-    sa.Column('session_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
-    sa.Column('session_expires_at', postgresql.TIMESTAMP(timezone=True), nullable=False),
-    sa.Column('user_id', postgresql.UUID(), nullable=True),
-    sa.Column('access_token', sa.TEXT(), nullable=True),
-    sa.Column('access_token_expires_at', postgresql.TIMESTAMP(timezone=True), nullable=True),
-    sa.Column('refresh_token', sa.TEXT(), nullable=True),
-    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
-    sa.PrimaryKeyConstraint('session_id')
+    sa.PrimaryKeyConstraint('wechat_user_id')
     )
     op.create_table('users',
     sa.Column('user_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
@@ -89,6 +59,41 @@ def upgrade():
     sa.ForeignKeyConstraint(['avatar_image_id'], ['images.image_id'], ),
     sa.PrimaryKeyConstraint('user_id'),
     sa.UniqueConstraint('account_name')
+    )
+    op.create_table('babies',
+    sa.Column('baby_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
+    sa.Column('family_name', sa.TEXT(), nullable=True),
+    sa.Column('given_name', sa.TEXT(), nullable=True),
+    sa.Column('nick_name', sa.TEXT(), nullable=True),
+    sa.Column('full_name', sa.TEXT(), nullable=True),
+    sa.Column('gender', sa.TEXT(), nullable=True),
+    sa.Column('dob', sa.DATE(), nullable=True),
+    sa.Column('creator_id', postgresql.UUID(), nullable=False),
+    sa.Column('info', sa.TEXT(), nullable=True),
+    sa.Column('avatar_image_id', postgresql.UUID(), nullable=True),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['avatar_image_id'], ['images.image_id'], ),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.user_id'], ),
+    sa.PrimaryKeyConstraint('baby_id')
+    )
+    op.create_table('providers',
+    sa.Column('provider_id', postgresql.UUID(), nullable=False),
+    sa.Column('certificates', sa.TEXT(), nullable=True),
+    sa.Column('info', sa.TEXT(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['provider_id'], ['users.user_id'], ),
+    sa.PrimaryKeyConstraint('provider_id')
+    )
+    op.create_table('sessions',
+    sa.Column('session_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), nullable=False),
+    sa.Column('session_expires_at', postgresql.TIMESTAMP(timezone=True), nullable=False),
+    sa.Column('user_id', postgresql.UUID(), nullable=True),
+    sa.Column('access_token', sa.TEXT(), nullable=True),
+    sa.Column('access_token_expires_at', postgresql.TIMESTAMP(timezone=True), nullable=True),
+    sa.Column('refresh_token', sa.TEXT(), nullable=True),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
+    sa.PrimaryKeyConstraint('session_id')
     )
     op.create_table('venues',
     sa.Column('venue_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
@@ -114,25 +119,18 @@ def upgrade():
     sa.ForeignKeyConstraint(['image_id'], ['images.image_id'], ),
     sa.ForeignKeyConstraint(['venue_id'], ['venues.venue_id'], )
     )
-    op.create_table('wechat_users',
-    sa.Column('wechat_user_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
-    sa.Column('open_id', sa.TEXT(), nullable=False),
-    sa.Column('avatar_url', sa.TEXT(), nullable=True),
-    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.PrimaryKeyConstraint('wechat_user_id')
-    )
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('wechat_users')
     op.drop_table('venues_images')
     op.drop_table('venues')
-    op.drop_table('users')
     op.drop_table('sessions')
     op.drop_table('providers')
-    op.drop_table('images')
     op.drop_table('babies')
+    op.drop_table('users')
+    op.drop_table('wechat_users')
+    op.drop_table('images')
     op.drop_table('activities')
     # ### end Alembic commands ###
