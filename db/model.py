@@ -73,7 +73,7 @@ class UserSchema(Schema):
 	class Meta:
 		fields = ('userId','accountName', 'password', 'source', 
 			'email', 'phone', 'familyName', 'givenName', 'fullName',
-			'gender', 'dob', 'avatarImageId', 'lastAccessAt', 'createdAt')
+			'gender', 'dob', 'lastAccessAt', 'createdAt')
 
 # WechatUser
 class WechatUser(Base):
@@ -114,11 +114,30 @@ class VenueSchema(Schema):
 class Activity(Base):
 	__table__ = t_activities
 	venue = relationship(Venue)
+	provider = relationship(User)
 
 class ActivitySchema(Schema):
 	venue = fields.Nested('VenueSchema')
+	provider = fields.Nested('UserSchema')
 	class Meta:
-		fields = ('activityId', 'name', 'description', 'venue')
+		fields = ('activityId', 'name', 'info', 'venue', 'provider')
+
+# Timeslot
+class Timeslot(Base):
+	__table__ = t_timeslots
+	activity = relationship(Activity)
+
+class TimeslotSchema(Schema):
+	activity = fields.Nested('Activity')
+	timeslot = fields.Nested('Timeslot')
+	bookedBy = fields.Nested('User')
+	class Meta:
+		fields = ('vacancyId', 'activity', 'timeslot', 'bookedBy', 'bookedAt')
+
+# Vacancy
+class Vacancy(Base):
+	__table__ = t_vacancy
+
 
 # Session
 class Session(Base):
