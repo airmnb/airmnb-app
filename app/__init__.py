@@ -343,7 +343,7 @@ def create_app(config_name):
 		return make_response(image.blob, 200, {
 			'Content-Type': image.mimeType,
 			'Content-Length': len(image.blob),
-			'Cache-Control': 'public, immutable',
+			'Cache-Control': 'public,max-age=315360000',
 		})
 
 	@app.route('/sys/login')
