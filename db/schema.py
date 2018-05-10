@@ -86,9 +86,31 @@ t_venues_images = sa.Table('venues_images', metadata,
 t_activities = sa.Table('activities', metadata,
 	sa.Column('activity_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'activityId', doc=''),
 	sa.Column('name', pg.TEXT, nullable=False, key=u'name', doc=''),
-	sa.Column('description', pg.TEXT, key=u'description', doc=''),
+	sa.Column('info', pg.TEXT, key=u'info', doc=''),
 	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
-	# sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
+	sa.Column('provider_id', pg.UUID, nullable=False, key=u'providerId', doc=''),
+	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
+	sa.ForeignKeyConstraint([u'providerId'], [u'users.userId']),
+)
+
+t_timeslots = sa.Table('timeslots', metadata,
+	sa.Column('timeslot_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'timeslotId', doc=''),
+	sa.Column('activity_id', pg.UUID, nullable=False, key=u'activityId', doc=''),
+	sa.Column('start', pg.TIMESTAMP(timezone=True), nullable=False, key=u'start', doc=''),
+	sa.Column('end', pg.TIMESTAMP(timezone=True), nullable=False, key=u'end', doc=''),
+	sa.ForeignKeyConstraint([u'activityId'], [u'activities.activityId']),
+)
+
+t_vacancy = sa.Table('vacancies', metadata,
+	sa.Column('vacancy_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'vacancyId', doc=''),
+	sa.Column('activity_id', pg.UUID, nullable=False, key=u'activityId', doc=''),
+	sa.Column('timeslot_id', pg.UUID, nullable=False, key=u'timeslotId', doc=''),
+	sa.Column('booked_by', pg.UUID, nullable=True, key=u'bookedBy', doc=''),
+	sa.Column('booked_at', pg.TIMESTAMP(timezone=True), nullable=True, key=u'bookedAt', doc=''),
+	sa.ForeignKeyConstraint([u'activityId'], [u'activities.activityId']),
+	sa.ForeignKeyConstraint([u'timeslotId'], [u'timeslots.timeslotId']),
+	sa.ForeignKeyConstraint([u'bookedBy'], [u'users.userId']),
 )
 
 t_sessions = sa.Table('sessions', metadata,
