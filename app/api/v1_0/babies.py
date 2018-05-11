@@ -40,11 +40,6 @@ def add_baby():
 	baby = m.Baby()
 	for k, v in data.items():
 		setattr(baby, k, v)
-	
-	if baby.avatarImageId:
-		image = m.Image.query.get(baby.avatarImageId)
-		if image:
-			image.linked = True
 
 	SS.add(baby)
 	SS.flush()

@@ -155,7 +155,7 @@ class Image(Base):
 
 class ImageSchema(Schema):
 	class Meta:
-		fields = ('imageId', 'creatorId')
+		fields = ('imageId', 'blob', 'mime')
 
 
 ##########################################################################
