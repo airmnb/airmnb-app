@@ -94,6 +94,14 @@ t_activities = sa.Table('activities', metadata,
 	sa.ForeignKeyConstraint([u'providerId'], [u'users.userId']),
 )
 
+t_activity_images = sa.Table('activity_images', metadata,
+	sa.Column('activity_image_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'activityImageId', doc=''),
+	sa.Column('activity_id', pg.UUID, nullable=False, key=u'activityId', doc=''),
+	sa.Column('image_id', pg.UUID, nullable=False, key=u'imageId', doc=''),
+	sa.ForeignKeyConstraint([u'activityId'], [u'activities.activityId']),
+	sa.ForeignKeyConstraint([u'imageId'], [u'images.imageId']),
+)
+
 t_timeslots = sa.Table('timeslots', metadata,
 	sa.Column('timeslot_id', pg.UUID, primary_key=True, autoincrement=False, server_default=sa.text('uuid_generate_v4()'), key=u'timeslotId', doc=''),
 	sa.Column('activity_id', pg.UUID, nullable=False, key=u'activityId', doc=''),
@@ -129,9 +137,6 @@ t_images = sa.Table('images', metadata,
 	sa.Column('image_id', pg.UUID, primary_key=True, server_default=sa.text('uuid_generate_v4()'), key=u'imageId', doc=''),
 	sa.Column('blob', pg.BYTEA, nullable=False, key=u'blob', doc=''),
 	sa.Column('mime', pg.TEXT, nullable=True, key=u'mimeType', doc=''),
-	sa.Column('creator_id', pg.UUID, nullable=False, key=u'creatorId', doc=''),
-	sa.Column('linked', pg.BOOLEAN, nullable=False, server_default=sa.text('False'), key=u'linked', doc=''),
-	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 )
 
 ##########################################################################
