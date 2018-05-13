@@ -7,6 +7,9 @@ import datetime
 import json
 import urllib
 import uuid
+import hashlib
+import random
+import string
 
 import sqlalchemy.orm.exc
 from flask import Flask, request, redirect, make_response, g, send_file, url_for, jsonify
@@ -25,6 +28,13 @@ from db.db import SS
 from .api import MyForm, Field
 
 log = logging.getLogger('app')
+
+NON_BLANK = string.digits + string.ascii_lowercase + string.ascii_uppercase + string.punctuation
+def generate_salt(length=10):
+	salt = random.sample(NON_BLANK, length)
+	random.shuffle(salt)
+	return ''.join(salt)
+
 
 def create_app(config_name):
 	app = Flask(__name__)
@@ -372,12 +382,20 @@ def create_app(config_name):
 		# login using local database
 		data = MyForm(	
 			Field('accountName', normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
-			Field('password', normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
+			Field('password', default='',
+				normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
 		).get_data(use_args=True)
 		print ('data is', data)
 		q = m.User.query.filter(m.User.accountName==data['accountName'])
 		try:
 			user = q.one()
+			sha = hashlib.sha256()
+			sha.update(user.accountName.encode('utf-8'))
+			sha.update(data['password'].encode('utf-8'))
+			sha.update(user.salt.encode('utf-8'))
+			encryption = sha.digest()
+			if encryption != user.password:
+				raise ValueError('invalid password')
 		except sqlalchemy.orm.exc.NoResultFound:
 			# user not found
 			resp = jsonify(error='invalid account name or password')
@@ -388,6 +406,11 @@ def create_app(config_name):
 			resp = jsonify(error='invalid account name or password')
 			resp.status_code = 401
 			return resp
+		except ValueError:
+			resp = jsonify(error='invalid account name or password')
+			resp.status_code = 401
+			return resp
+
 
 		g.current_user = user
 		# update session to mark it belongs to user
@@ -436,7 +459,16 @@ def create_app(config_name):
 			return resp
 		elif check:
 			return jsonify(message='account name \'{}\' is available'.format(accountName))
-		user = m.User(source=1, salt='temp', **data)
+
+		salt = generate_salt()
+		sha = hashlib.sha256()
+		sha.update(accountName.encode('utf-8'))
+		sha.update(password.encode('utf-8'))
+		sha.update(salt.encode('utf-8'))
+		encryption = sha.digest()
+
+		user = m.User(accountName=accountName, password=encryption, 
+			source=1, salt=salt)
 		SS.add(user)
 		SS.flush()
 		SS.commit()
