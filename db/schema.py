@@ -2,8 +2,7 @@
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as pg
 
-metadata = sa.MetaData()
-
+from . import metadata
 
 ##########################################################################
 # Amb user account, it's also a customer account. We assume every account can be a consumer.
