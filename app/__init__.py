@@ -21,6 +21,9 @@ from .i18n import get_text as _
 import db.model as m
 from db.db import SS
 
+
+from .api import MyForm, Field
+
 log = logging.getLogger('app')
 
 def create_app(config_name):
@@ -37,6 +40,7 @@ def create_app(config_name):
 		'/sys/login$',
 		'/sys/login/weapp',
 		'/sys/logout$',
+		'/sys/signup',
 		'/sys/debug$',
 		'/sys/authorization_response$',
 		'/sys/health_check$',
@@ -274,13 +278,11 @@ def create_app(config_name):
 			buf.append('{}\t{}\n'.format(k, v))
 		return make_response('\n'.join(buf), 200, {'Content-Type': 'text/plain'})
 
-	@app.route('/sys/signup')
-	def singup():
-		return ''
 
 	@app.route('/sys/health_check')
 	def health_check():
 		return make_response('OK', 200, {'Content-Type': 'text/plain'})
+
 
 	@app.route('/sys/login/weapp')
 	def weapp_login():
@@ -346,6 +348,7 @@ def create_app(config_name):
 			'Cache-Control': 'public,max-age=315360000',
 		})
 
+
 	@app.route('/sys/login')
 	def login():
 		identity_provider = request.args.get('use', '')
@@ -365,12 +368,41 @@ def create_app(config_name):
 			state_dict['session_id'] = session_id
 			callback = url_for('authorization_response', _external=True)
 			return facebook.authorize(callback=callback)
+
 		return 'login using system database'
 
 
 	@app.route('/sys/logout')
 	def logout():
 		return redirect(location='/')
+
+
+	@app.route('/sys/signup', methods=['POST'])
+	def signup():
+		data = MyForm(
+			Field('accountName'),
+			Field('password'),
+			Field('check'),
+		).get_data()
+		accountName = data['accountName']
+		password = data['password']
+		check = data.pop('check')
+		q = m.User.query.filter(m.User.accountName==accountName)
+		found = q.count() > 0
+		if found:
+			resp = jsonify(error='account name \'{}\' is not available'.format(accountName))
+			resp.status_code = 400
+			return resp
+		elif check:
+			return jsonify(message='account name \'{}\' is available'.format(accountName))
+		user = m.User(source=1, salt='temp', **data)
+		SS.add(user)
+		SS.flush()
+		SS.commit()
+		return jsonify(
+			message='you have signed up as {}'.format(accountName),
+			user=m.User.dump(user),
+		)
 
 
 	@app.route('/sys/whoami', methods=['OPTIONS'])

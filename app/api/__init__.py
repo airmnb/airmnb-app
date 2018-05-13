@@ -167,7 +167,6 @@ class validators:
 	# 			raise ValueError('value must be a list')
 
 
-
 class Field(object):
 	def __init__(self, name, is_mandatory=False, default=None,
 			normalizer=None, validators=[]):

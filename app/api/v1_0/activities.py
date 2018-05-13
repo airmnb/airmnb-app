@@ -35,13 +35,6 @@ def check_venue_existence(data, key, venueId):
 @caps()
 def create_new_activity():
 	data = MyForm(
-		Field('activityId', is_mandatory=True,
-			default=lambda: helper.generate_new_uuid(),
-			normalizer=helper.normalize_uuid,
-			validators=[
-				helper.check_uuid_is_valid,
-				check_uuid_availability,
-		]),
 		Field('name', is_mandatory=True, validators=[
 			validators.non_blank,
 		]),
@@ -51,6 +44,15 @@ def create_new_activity():
 				helper.check_uuid_is_valid,
 				check_venue_existence,
 		]),
+		Field('startDate'),
+		Field('endDate'),
+		Field('startTime'),
+		Field('endTime'),
+		Field('capacity'),
+		Field('imageIds'),
+		Field('daysOfWeek'),
+		Field('gender'),
+		Field('price'),
 	).get_data(copy=True)
 
 	activity = m.Activity(**data)
