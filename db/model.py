@@ -138,7 +138,7 @@ class TimeslotSchema(Schema):
 
 # Vacancy
 class Vacancy(Base):
-	__table__ = t_vacancy
+	__table__ = t_vacancies
 
 
 # Session
