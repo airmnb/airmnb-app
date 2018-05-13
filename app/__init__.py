@@ -35,6 +35,14 @@ def generate_salt(length=10):
 	random.shuffle(salt)
 	return ''.join(salt)
 
+def encrypt(accountName, password, salt):
+	sha = hashlib.sha256()
+	sha.update(accountName.encode('utf-8'))
+	sha.update(password.encode('utf-8'))
+	sha.update(salt.encode('utf-8'))
+	digest = sha.digest()
+	return digest
+
 
 def create_app(config_name):
 	app = Flask(__name__)
@@ -389,11 +397,7 @@ def create_app(config_name):
 		q = m.User.query.filter(m.User.accountName==data['accountName'])
 		try:
 			user = q.one()
-			sha = hashlib.sha256()
-			sha.update(user.accountName.encode('utf-8'))
-			sha.update(data['password'].encode('utf-8'))
-			sha.update(user.salt.encode('utf-8'))
-			encryption = sha.digest()
+			encryption = encrypt(user.accountName, data['password'], user.salt)
 			if encryption != user.password:
 				raise ValueError('invalid password')
 		except sqlalchemy.orm.exc.NoResultFound:
@@ -446,7 +450,7 @@ def create_app(config_name):
 		data = MyForm(
 			Field('accountName'),
 			Field('password'),
-			Field('check'),
+			Field('check', default=False),
 		).get_data()
 		accountName = data['accountName']
 		password = data['password']
@@ -461,12 +465,7 @@ def create_app(config_name):
 			return jsonify(message='account name \'{}\' is available'.format(accountName))
 
 		salt = generate_salt()
-		sha = hashlib.sha256()
-		sha.update(accountName.encode('utf-8'))
-		sha.update(password.encode('utf-8'))
-		sha.update(salt.encode('utf-8'))
-		encryption = sha.digest()
-
+		encryption = encrypt(accountName, password, salt)
 		user = m.User(accountName=accountName, password=encryption, 
 			source=1, salt=salt)
 		SS.add(user)

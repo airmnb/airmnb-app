@@ -71,9 +71,11 @@ class User(Base):
 
 class UserSchema(Schema):
 	class Meta:
-		fields = ('userId','accountName', 'password', 'source', 
+		# password (encryption) and salt must never be dumped
+		fields = ('userId','accountName', 'source',
 			'email', 'phone', 'familyName', 'givenName', 'fullName',
 			'gender', 'dob', 'lastAccessAt', 'createdAt')
+		exclude = ('password', 'salt')
 
 # WechatUser
 class WechatUser(Base):

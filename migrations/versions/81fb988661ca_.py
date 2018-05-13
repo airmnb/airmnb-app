@@ -21,7 +21,7 @@ def upgrade():
     op.create_table('users',
     sa.Column('user_id', postgresql.UUID(), server_default=sa.text('uuid_generate_v4()'), autoincrement=False, nullable=False),
     sa.Column('account_name', sa.TEXT(), nullable=True),
-    sa.Column('password', sa.TEXT(), nullable=True),
+    sa.Column('password', sa.BYTEA(), nullable=True),
     sa.Column('source', sa.SMALLINT(), nullable=False),
     sa.Column('email', sa.TEXT(), nullable=True),
     sa.Column('phone', sa.TEXT(), nullable=True),
