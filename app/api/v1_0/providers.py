@@ -16,9 +16,19 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @api
 @caps()
 def create_new_provider():
+	data = MyForm(
+		Field('providerId', is_mandatory=True, default=lambda: g.current_user.userId),
+		Field('info', is_mandatory=True, validators=[
+			validators.is_string,
+			]),
+		Field('certificates')
+		)
+	provider = m.Provider(**data)
+	SS.add(provider)
+	SS.flush()
 	return jsonify(message=_('created provider {0} successfully'
-		).format('newprovider'),
-		provider=dict(name='stub'),
+		).format(provider.providerId),
+		provider=m.Provider.dump(provider),
 	)
 
 
@@ -26,12 +36,30 @@ def create_new_provider():
 @api
 @caps()
 def get_provider(providerId):
-	return jsonify(provider=dict(name='tbd', providerId=providerId))
+	provider = m.Provider.query.get(providerId)
+	if not provider:
+		raise InvalidUsage(_('provider {} not found').format(providerId), 404)
+	return jsonify(provider=m.Provider.dump(provider))
 
 
 @bp.route(_name + '/<providerId>', methods=['PUT'])
 @api
 @caps()
 def update_provider():
-	return jsonify(provider=dict(name='tbd', providerId=providerId))
+	provider = m.Provider.query.get(providerId)
+	if not provider:
+		raise InvalidUsage(_('provider {} not found').format(providerId), 404)
+	data = MyForm(
+		Field('info', is_mandatory=True, validators=[
+			validators.is_string,
+			]),
+		Field('certificates')
+		)
+	for k, v in data:
+		setattr(provider, k, v)
+	SS.flush()
+	return jsonify(
+		message=_('updated provider {} successfully').format(providerId),
+		provider=m.Provider.dump(provider),
+		)
 

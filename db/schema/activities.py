@@ -9,6 +9,8 @@ t_activities = sa.Table('activities', metadata,
 	sa.Column('venue_id', pg.UUID, nullable=False, key=u'venueId', doc=''),
 	sa.Column('provider_id', pg.UUID, nullable=False, key=u'providerId', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
+	sa.Column('price', pg.DOUBLE_PRECISION, nullable=True, key=u'price', doc=''),
+	sa.Column('currency', pg.TEXT, nullable=True, key=u'currency', doc='iso 4217 currency code'),
 	sa.ForeignKeyConstraint([u'venueId'], [u'venues.venueId']),
 	sa.ForeignKeyConstraint([u'providerId'], [u'users.userId']),
 )

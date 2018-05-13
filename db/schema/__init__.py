@@ -1,8 +1,9 @@
 
 import os
 import glob
+from .. import metadata
 
-__all__ = []
+__all__ = ['metadata']
 
 for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
 	_basename = os.path.basename(_)
