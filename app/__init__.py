@@ -40,7 +40,7 @@ def create_app(config_name):
 		'/sys/login$',
 		'/sys/login/weapp',
 		'/sys/logout$',
-		'/sys/signup',
+		'/sys/signup$',
 		'/sys/debug$',
 		'/sys/authorization_response$',
 		'/sys/health_check$',
@@ -349,11 +349,11 @@ def create_app(config_name):
 		})
 
 
-	@app.route('/sys/login')
+	@app.route('/sys/login', methods=['GET'])
 	def login():
 		identity_provider = request.args.get('use', '')
 		session_id = request.args.get('session_id', '')
-
+		sessionId = session_id
 		# TODO: validate session_id
 
 		if identity_provider == 'google':
@@ -369,7 +369,48 @@ def create_app(config_name):
 			callback = url_for('authorization_response', _external=True)
 			return facebook.authorize(callback=callback)
 
-		return 'login using system database'
+		# login using local database
+		data = MyForm(	
+			Field('accountName', normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
+			Field('password', normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
+		).get_data(use_args=True)
+		print ('data is', data)
+		q = m.User.query.filter(m.User.accountName==data['accountName'])
+		try:
+			user = q.one()
+		except sqlalchemy.orm.exc.NoResultFound:
+			# user not found
+			resp = jsonify(error='invalid account name or password')
+			resp.status_code = 401
+			return resp
+		except sqlalchemy.orm.exc.MultipleResultsFound:
+			# impossible
+			resp = jsonify(error='invalid account name or password')
+			resp.status_code = 401
+			return resp
+
+		g.current_user = user
+		# update session to mark it belongs to user
+		ses = m.Session.query.get(session_id)
+		if not ses:
+			resp = jsonify(error='invalid session {}'.format(session_id))
+			resp.status_code = 400
+			return resp
+
+		ses.userId = user.userId
+		SS.flush()
+		SS.commit()
+
+		payload = {
+			'sessionId': sessionId,
+			'userId': user.userId,
+			'extra': {
+				'data': 'whatever',
+			},
+		}
+		token = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
+		resp = jsonify(sessionToken=token, sessionId=sessionId, user=m.User.dump(g.current_user))
+		return resp
 
 
 	@app.route('/sys/logout')
