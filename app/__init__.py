@@ -267,7 +267,7 @@ def create_app(config_name):
 				SS.add(user)
 				SS.commit()
 
-		# TODO: check sessionId in csae it is invalid
+		# TODO: check sessionId in case it is invalid
 		sessionId = state.get('session_id')
 		# update session to mark it belongs to user
 		ses = m.Session.query.get(sessionId)
