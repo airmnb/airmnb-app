@@ -18,7 +18,6 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @api
 @caps()
 def create_new_image():
-	user = g.current_user
 	data = MyForm(
 		Field('dataFile', is_mandatory=True,
 			validators=[
@@ -29,7 +28,7 @@ def create_new_image():
 	blob = dataFile.read()
 	filename = dataFile.filename
 	mimeType, encoding = mimetypes.guess_type(filename)
-	image = m.Image(blob=blob, mimeType=mimeType, creatorId = user.userId)
+	image = m.Image(blob=blob, mimeType=mimeType)
 	SS.add(image)
 	SS.flush()
 	return jsonify(image=m.Image.dump(image))
