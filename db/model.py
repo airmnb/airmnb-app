@@ -117,13 +117,13 @@ class Activity(Base):
 	__table__ = t_activities
 	venue = relationship('Venue')
 	provider = relationship('User')
-	tags = relationship('Tag')
+	# tags = relationship('Tag')
 
 
 class ActivitySchema(Schema):
 	venue = fields.Nested('VenueSchema')
 	provider = fields.Nested('UserSchema')
-	tags = fields.Nested('TagSchema')
+	# tags = fields.Nested('TagSchema')
 	class Meta:
 		fields = ('activityId', 'name', 'info', 'venue', 'provider', 'tags')
 
