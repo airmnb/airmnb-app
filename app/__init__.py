@@ -101,8 +101,14 @@ def create_app(config_name):
 
 	@app.before_request
 	def authenticate_request():
-		if request.method == 'OPTIONS':
-			return make_response('', 200)
+		if request.method == 'OPTIONS' and request.path == '/sys/whoami':
+			return make_response('', 200, {
+					'Accept': 'application/json',
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+					'Access-Control-Allow-Headers': 'Authorization,X-Requested-With',
+				})
+
 		# if os.environ.get('AMB_DEBUG_HEADER'):
 		# 	return None 
 
@@ -188,6 +194,7 @@ def create_app(config_name):
 
 	@app.after_request
 	def apply_cors_headers(response):
+		print('always allow access from any origin')
 		response.headers['Access-Control-Allow-Origin'] = '*'
 		response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
 		response.headers['Access-Control-Allow-Headers'] = 'Authorization,X-Requested-With'
@@ -477,9 +484,9 @@ def create_app(config_name):
 		)
 
 
-	@app.route('/sys/whoami', methods=['OPTIONS'])
-	def whoami_options():
-		return make_response('', 200, {'Access-Control-Allow-Origin': '*'})
+	# @app.route('/sys/whoami', methods=['OPTIONS'])
+	# def whoami_options():
+	# 	return make_response('', 200, {'Access-Control-Allow-Origin': '*'})
 
 	@app.route('/sys/whoami')
 	def whoami():
