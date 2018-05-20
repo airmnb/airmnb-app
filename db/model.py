@@ -115,14 +115,17 @@ class VenueSchema(Schema):
 # Activity
 class Activity(Base):
 	__table__ = t_activities
-	venue = relationship(Venue)
-	provider = relationship(User)
+	venue = relationship('Venue')
+	provider = relationship('User')
+	tags = relationship('Tag')
+
 
 class ActivitySchema(Schema):
 	venue = fields.Nested('VenueSchema')
 	provider = fields.Nested('UserSchema')
+	tags = fields.Nested('TagSchema')
 	class Meta:
-		fields = ('activityId', 'name', 'info', 'venue', 'provider')
+		fields = ('activityId', 'name', 'info', 'venue', 'provider', 'tags')
 
 # Timeslot
 class Timeslot(Base):
@@ -158,6 +161,15 @@ class Image(Base):
 class ImageSchema(Schema):
 	class Meta:
 		fields = ('imageId', 'blob', 'mime')
+
+# Tag
+class Tag(Base):
+	__table__ = t_tags
+
+class TagSchema(Schema):
+	class Meta:
+		fields = ('tagId', 'name', 'description')
+
 
 
 ##########################################################################
