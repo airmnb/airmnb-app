@@ -160,7 +160,7 @@ class Image(Base):
 
 class ImageSchema(Schema):
 	class Meta:
-		fields = ('imageId', 'blob', 'mime')
+		fields = ('imageId', 'mimeType')
 
 # Tag
 class Tag(Base):
