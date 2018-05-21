@@ -122,10 +122,10 @@ class Activity(Base):
 
 class ActivitySchema(Schema):
 	venue = fields.Nested('VenueSchema')
-	provider = fields.Nested('UserSchema')
+	# provider = fields.Nested('UserSchema')
 	# tags = fields.Nested('TagSchema')
 	class Meta:
-		fields = ('activityId', 'name', 'info', 'venue', 'provider')
+		fields = ('activityId', 'name', 'info', 'venue', 'price', 'capacity', 'gender')
 
 # Timeslot
 class Timeslot(Base):

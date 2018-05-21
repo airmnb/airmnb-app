@@ -1,5 +1,5 @@
 
-from flask import request, session, jsonify
+from flask import request, session, jsonify, g
 
 import db.model as m
 from db.db import SS
@@ -16,9 +16,25 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @api
 @caps()
 def get_activities():
-	activities = m.Activity.query.order_by(m.Activity.name).all()
+	user = g.current_user
+	activities = m.Activity.query.filter(m.Activity.providerId == user.userId).order_by(m.Activity.name).all()
 	return jsonify(activities=m.Activity.dump(activities))
 
+@bp.route(_name + '/ongoing', methods=['GET'])
+@api
+@caps()
+def get_ongoing_activities():
+	user = g.current_user
+	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status == 0).order_by(m.Activity.name).all()
+	return jsonify(activities=m.Activity.dump(activities))
+
+@bp.route(_name + '/closed', methods=['GET'])
+@api
+@caps()
+def get_closed_activities():
+	user = g.current_user
+	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status != 0).order_by(m.Activity.name).all()
+	return jsonify(activities=m.Activity.dump(activities))
 
 def check_uuid_availability(data, key, activityId):
 	if m.Activity.query.get(activityId):
