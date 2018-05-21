@@ -38,6 +38,7 @@ def check_image_ids(data, key, imageIds):
 @api
 @caps()
 def create_new_activity():
+	
 	data = MyForm(
 		Field('name', is_mandatory=True, validators=[
 			validators.non_blank,
@@ -53,37 +54,42 @@ def create_new_activity():
 		Field('price'),
 		Field('currency'),
 		Field('capacity', validators=[
-			validators.is_number, (), {min_value: 1}
+			# validators.is_number, (), dict(min_value=1)
 			]),
-		Field('startDate', is_mandatory=True,
-			normalizers=[
-				helper.normalize_date,
-			]),
-		Field('endDate', is_mandatory=True,
-			normalizers=[
-				helper.normalize_date,
-			]),
-		Field('startTime', is_mandatory=True,
-			normalizers=[
-				helper.normalize_time,
-			]),
-		Field('endTime', is_mandatory=True,
-			normalizers=[
-				helper.normalize_time,
-			]),
-		Field('imageIds', is_mandatory=True, validators=[
+		Field('startDate', is_mandatory=True, ),
+			# normalizers=[
+			# 	helper.normalize_date,
+			# ]),
+		Field('endDate', is_mandatory=True, ),
+			# normalizers=[
+			# 	helper.normalize_date,
+			# ]),
+		Field('startTime', is_mandatory=True, ),
+			# normalizers=[
+			# 	helper.normalize_time,
+			# ]),
+		Field('endTime', is_mandatory=True, ),
+			# normalizers=[
+			# 	helper.normalize_time,
+			# ]),
+		Field('imageIds', is_mandatory=False, validators=[
 			check_image_ids,
 			]),
-		Field('daysOfWeek', is_mandatory=True, normalizers=[
-			helper.normalize_week_day_mask
-			]),
+		Field('daysOfWeek', is_mandatory=False, ),
+			# normalizers=[
+			# 	helper.normalize_week_day_mask
+			# ]),
 	).get_data(copy=True)
+
+	print('>>> creating')
+
+
 	startDate = data.pop('startDate')
 	endDate = data.pop('endDate')
-	startTime = date.pop('startTime')
+	startTime = data.pop('startTime')
 	endTime = data.pop('endTime')
 	imageIds = data.pop('imageIds')
-	daysOfWeek = data.pop(daysOfWeek)
+	daysOfWeek = data.pop('daysOfWeek')
 
 	activity = m.Activity(**data)
 	SS.add(activity)
