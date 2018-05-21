@@ -81,9 +81,6 @@ def create_new_activity():
 			# ]),
 	).get_data(copy=True)
 
-	print('>>> creating')
-
-
 	startDate = data.pop('startDate')
 	endDate = data.pop('endDate')
 	startTime = data.pop('startTime')
