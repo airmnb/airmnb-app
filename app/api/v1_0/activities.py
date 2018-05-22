@@ -127,7 +127,7 @@ def get_activity(activityId):
 @bp.route(_name + '/<activityId>', methods=['DELETE'])
 @api
 @caps()
-def delete_activity():
+def delete_activity(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
 		raise InvalidUsage(_('activity {0} not found').format(activityId), 404)
