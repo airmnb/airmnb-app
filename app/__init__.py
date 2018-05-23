@@ -197,7 +197,7 @@ def create_app(config_name):
 		print('always allow access from any origin')
 		response.headers['Access-Control-Allow-Origin'] = '*'
 		response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
-		response.headers['Access-Control-Allow-Headers'] = 'Authorization,X-Requested-With'
+		response.headers['Access-Control-Allow-Headers'] = 'Authorization,X-Requested-With,Content-Type,Accept,Origin'
 		return response
 
 	@app.route('/sys/authorization_response')
