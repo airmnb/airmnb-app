@@ -16,7 +16,7 @@ t_users = sa.Table('users', metadata,
 	sa.Column('gender', pg.BOOLEAN, nullable=True, key=u'gender', doc=''),
 	sa.Column('dob', pg.DATE, nullable=True, key=u'dob', doc=''),
 	# sa.Column('avatar_image_id', pg.UUID, nullable=True, key=u'avatarImageId', doc=''),
-	sa.Column('last_access_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'lastAccessAt', doc=''),
+	sa.Column('last_access_at', pg.TIMESTAMP(timezone=True), nullable=True, server_default=sa.text('now()'), key=u'lastAccessAt', doc=''),
 	sa.Column('created_at', pg.TIMESTAMP(timezone=True), nullable=False, server_default=sa.text('now()'), key=u'createdAt', doc=''),
 	# sa.ForeignKeyConstraint([u'avatarImageId'], [u'images.imageId']),
 )
