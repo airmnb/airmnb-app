@@ -460,7 +460,7 @@ def create_app(config_name):
 			Field('check', default=False),
 		).get_data()
 		accountName = data['accountName']
-		password = data['password']
+		password = data.get('password')
 		check = data.pop('check')
 		q = m.User.query.filter(m.User.accountName==accountName)
 		found = q.count() > 0
