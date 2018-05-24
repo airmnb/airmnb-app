@@ -128,7 +128,7 @@ class ActivitySchema(Schema):
 	# tags = fields.Nested('TagSchema')
 	images = fields.Nested('ActivityImage', many=True)
 	class Meta:
-		fields = ('activityId', 'name', 'info', 'venue', 'price', 'capacity', 'gender', 'images')
+		fields = ('activityId', 'name', 'info', 'venue', 'price', 'capacity', 'gender')
 
 
 # ActivityImage
@@ -137,7 +137,7 @@ class ActivityImage(Base):
 
 class ActivityImageSchema(Schema):
 	class Meta:
-		fields = ['imageId']
+		fields = ['activityImageId', 'activityId']
 
 # Timeslot
 class Timeslot(Base):

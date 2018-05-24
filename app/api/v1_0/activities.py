@@ -26,7 +26,11 @@ def get_activities():
 def get_ongoing_activities():
 	user = g.current_user
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status == 0).order_by(m.Activity.name).all()
-	return jsonify(activities=m.Activity.dump(activities))
+	activityJsons = m.Activity.dump(activities)
+	for activity in activityJsons:
+		activity['imageIds'] = get_activity_images(activity['activityId'])
+
+	return jsonify(activities=activityJsons)
 
 @bp.route(_name + '/closed', methods=['GET'])
 @api
@@ -120,6 +124,10 @@ def create_new_activity():
 		activity=m.Activity.dump(activity),
 	)
 
+def get_activity_images(activityId):
+	rows = m.ActivityImage.query.filter(m.ActivityImage.activityId == activityId).all()
+	imageIds = [r.activityImageId for r in rows]
+	return imageIds
 
 @bp.route(_name + '/<activityId>', methods=['GET'])
 @api
@@ -128,6 +136,8 @@ def get_activity(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
 		raise InvalidUsage(_('activity {0} not found').format(activityId), 404)
+
+	activity.imageIds = get_activity_images(activityId)
 	return jsonify(activity=m.Activity.dump(activity))
 
 
