@@ -156,7 +156,7 @@ class ActivityTag(Base):
 # Timeslot
 class Timeslot(Base):
 	__table__ = t_timeslots
-	vacacies = relationship('Vacancy')
+	vacancies = relationship('Vacancy')
 
 
 class TimeslotSchema(Schema):

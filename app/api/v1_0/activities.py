@@ -143,12 +143,12 @@ def create_new_activity():
 	for d in helper.enumerate_dates(startDate, endDate, daysOfWeek):
 		start = datetime.datetime(d.year, d.month, d.day, st.hour, st.minute, st.second)
 		end = datetime.datetime(d.year, d.month, d.day, et.hour, et.minute, et.second)
-		SS.add(timeslot)
 		# add vacancies
-		timeslot = m.TimeSlot(activityId=activity.activityId, start=start, end=end)
+		timeslot = m.Timeslot(activityId=activity.activityId, start=start, end=end)
 		for i in range(data['capacity']):
 			vacancy = m.Vacancy(activityId=activity.activityId, timeslotId=timeslot.timeslotId)
 			timeslot.vacancies.add(vacancy)
+		SS.add(timeslot)
 	SS.flush()
 
 
