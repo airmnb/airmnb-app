@@ -1,6 +1,7 @@
 
 from flask import request, session, jsonify, g
 
+import datetime
 import db.model as m
 from db.db import SS
 from app.api import api, caps, MyForm, Field, validators
@@ -75,8 +76,8 @@ def create_new_activity():
 		Field('info'),
 		Field('venueId', is_mandatory=False,
 			validators=[
-				helper.check_uuid_is_valid,
-				check_venue_existence,
+				# helper.check_uuid_is_valid,
+				# check_venue_existence,
 			]),
 		Field('providerId', is_mandatory=True, default=lambda: g.current_user.userId),
 		Field('gender'),
@@ -102,7 +103,7 @@ def create_new_activity():
 			# 	helper.normalize_time,
 			# ]),
 		Field('imageIds', is_mandatory=False, validators=[
-			check_image_ids,
+			# check_image_ids,
 			]),
 		Field('daysOfWeek', is_mandatory=True, default=lambda: 127),
 			# normalizers=[
@@ -123,7 +124,7 @@ def create_new_activity():
 		location = None
 
 	if location:
-		venue = m.Venue(langitute=location['longitude'], latitude=location['latitude'], addr1='-')
+		venue = m.Venue(longitude=location['longitude'], latitude=location['latitude'], addr1='-', providerId = data['providerId'])
 		SS.add(venue)
 		SS.flush()
 		data['venueId'] = venue.venueId
