@@ -374,7 +374,7 @@ def create_app(config_name):
 		})
 
 
-	@app.route('/sys/login', methods=['GET'])
+	@app.route('/sys/login', methods=['GET','POST'])
 	def login():
 		identity_provider = request.args.get('use', '')
 		session_id = request.args.get('session_id', '')
@@ -399,7 +399,7 @@ def create_app(config_name):
 			Field('accountName', normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
 			Field('password', default='',
 				normalizer=lambda data, key, value: value[-1] if isinstance(value, list) else value),
-		).get_data(use_args=True)
+		).get_data(use_args=False)
 		print ('data is', data)
 		q = m.User.query.filter(m.User.accountName==data['accountName'])
 		try:

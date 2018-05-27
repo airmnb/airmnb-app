@@ -61,7 +61,7 @@ def create_new_venue():
 		# TODO: validate coordinates and/or other values
 		# Field('longitude', is_mandatory=True, default=lambda: 0),
 		# Field('latitude', is_mandatory=True, default=lambda: 0),
-		Field('name', is_mandatory=True, validators=[
+		Field('name', is_mandatory=False, validators=[
 			validators.non_blank,
 		]),
 		Field('addr1', is_mandatory=True, validators=[
@@ -69,14 +69,8 @@ def create_new_venue():
 		]),
 		Field('addr2'),
 		Field('addr3'),
-		Field('city', is_mandatory=True, default=lambda: 'fakecity',
-			validators=[
-				validators.non_blank,
-		]),
-		Field('state', is_mandatory=False, default=lambda: 'state',
-			validators=[
-				validators.non_blank,
-		]),
+		Field('city'),
+		Field('state'),
 		Field('country'),
 		Field('postcode'),
 	).get_data(copy=True)
