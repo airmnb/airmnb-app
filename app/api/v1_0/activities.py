@@ -73,7 +73,7 @@ def create_new_activity():
 			validators.non_blank,
 			]),
 		Field('info'),
-		Field('venueId', is_mandatory=True,
+		Field('venueId', is_mandatory=False,
 			validators=[
 				helper.check_uuid_is_valid,
 				check_venue_existence,
@@ -104,7 +104,7 @@ def create_new_activity():
 		Field('imageIds', is_mandatory=False, validators=[
 			check_image_ids,
 			]),
-		Field('daysOfWeek', is_mandatory=False, ),
+		Field('daysOfWeek', is_mandatory=True, default=lambda: 127),
 			# normalizers=[
 			# 	helper.normalize_week_day_mask
 			# ]),
@@ -117,6 +117,16 @@ def create_new_activity():
 	endTime = data.pop('endTime')
 	imageIds = data.pop('imageIds')
 	daysOfWeek = data.pop('daysOfWeek')
+	try:
+		location = data.pop('location')
+	except :
+		location = None
+
+	if location:
+		venue = m.Venue(langitute=location['longitude'], latitude=location['latitude'], addr1='-')
+		SS.add(venue)
+		SS.flush()
+		data['venueId'] = venue.venueId
 
 	activity = m.Activity(**data)
 	SS.add(activity)
@@ -139,6 +149,8 @@ def create_new_activity():
 			vacancy = m.Vacancy(activityId=activity.activityId, timeslotId=timeslot.timeslotId)
 			timeslot.vacancies.add(vacancy)
 	SS.flush()
+
+
 	return jsonify(message=_('created activity {0} successfully'
 		).format(activity.activityId),
 		activity=m.Activity.dump(activity),
