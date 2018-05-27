@@ -145,10 +145,12 @@ def create_new_activity():
 		end = datetime.datetime(d.year, d.month, d.day, et.hour, et.minute, et.second)
 		# add vacancies
 		timeslot = m.Timeslot(activityId=activity.activityId, start=start, end=end)
+		SS.add(timeslot)
+		SS.flush()
 		for i in range(data['capacity']):
 			vacancy = m.Vacancy(activityId=activity.activityId, timeslotId=timeslot.timeslotId)
-			timeslot.vacancies.add(vacancy)
-		SS.add(timeslot)
+			# timeslot.vacancies.add(vacancy)
+			SS.add(vacancy)
 	SS.flush()
 
 
