@@ -123,22 +123,10 @@ def create_new_activity():
 	SS.add(activity)
 	SS.flush()
 
-	# Images
-	for imageId in imageIds:
-		activityImage = m.ActivityImage(**{'activityImageId': imageId, 'activityId': activity.activityId })
-		SS.add(activityImage)
-
-	SS.flush()
-
 	return jsonify(message=_('created activity {0} successfully'
 		).format(activity.activityId),
 		activity=m.Activity.dump(activity),
 	)
-
-def get_activity_images(activityId):
-	rows = m.ActivityImage.query.filter(m.ActivityImage.activityId == activityId).all()
-	imageIds = [r.activityImageId for r in rows]
-	return imageIds
 
 @bp.route(_name + '/<activityId>', methods=['GET'])
 @api
