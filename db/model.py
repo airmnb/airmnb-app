@@ -118,17 +118,26 @@ class Activity(Base):
 	__table__ = t_activities
 	venue = relationship('Venue')
 	provider = relationship('User')
-	# tags = relationship('Tag')
-	activity_image = relationship('ActivityImage')
-	
+	images = relationship('ActivityImage')
+	# TODO: activity_image is still needed?
+	activity_image = synonym('images')
+	@property
+	def tags(self):
+		return SS.query(Tag).filter(
+			Tag.tagId.in_(SS.query(ActivityTag.tagId
+				).filter(ActivityTag.activityId==self.acvitityId))
+			).order_by(Tag.tagId).all()
 
 class ActivitySchema(Schema):
 	venue = fields.Nested('VenueSchema')
 	# provider = fields.Nested('UserSchema')
-	# tags = fields.Nested('TagSchema')
-	images = fields.Nested('ActivityImage', many=True)
+	tags = fields.Nested('TagSchema')
+	imageIds = fields.Method('get_image_ids')
+	def get_image_ids(self, obj):
+		return [i.imageId for i in obj.images]
 	class Meta:
-		fields = ('activityId', 'name', 'info', 'venue', 'price', 'capacity', 'gender')
+		fields = ('activityId', 'name', 'info', 'venue', 'price', 'capacity', 
+			'tags', 'gender', 'imageIds')
 
 
 # ActivityImage
@@ -138,6 +147,12 @@ class ActivityImage(Base):
 class ActivityImageSchema(Schema):
 	class Meta:
 		fields = ['activityImageId', 'activityId']
+
+
+# ActivityTag
+class ActivityTag(Base):
+	__table__ = t_activity_tags
+
 
 # Timeslot
 class Timeslot(Base):
@@ -165,6 +180,7 @@ class Session(Base):
 class SessionSchema(Schema):
 	class Meta:
 		fields = ('sessionId', 'userId', 'accessToken', 'refreshToken')
+
 
 # Image
 class Image(Base):
