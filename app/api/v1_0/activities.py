@@ -82,11 +82,11 @@ def create_new_activity():
 		Field('capacity', validators=[
 			# validators.is_number, (), dict(min_value=1)
 			]),
-		Field('startDate', is_mandatory=True, ),
+		Field('startDate', is_mandatory=False, ),
 			# normalizers=[
 			# 	helper.normalize_date,
 			# ]),
-		Field('endDate', is_mandatory=True, ),
+		Field('endDate', is_mandatory=False, ),
 			# normalizers=[
 			# 	helper.normalize_date,
 			# ]),
