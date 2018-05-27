@@ -146,7 +146,7 @@ class ActivityImage(Base):
 
 class ActivityImageSchema(Schema):
 	class Meta:
-		fields = ['activityImageId', 'activityId']
+		fields = ('imageId', 'activityId')
 
 
 # ActivityTag
