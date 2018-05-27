@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# import cStringIO
+import io as cStringIO
 import traceback
 from functools import wraps
 
@@ -62,9 +62,9 @@ def api(fn):
 			# Oops! Caught unhandled exception, log what happend
 			# and return an error response to client
 			#
-			# out = cStringIO.StringIO()
-			# traceback.print_exc(file=out)
-			# current_app.logger.error('\033[1;31mERROR caught inside api:\033[0m\n%s\n' % out.getvalue())
+			out = cStringIO.StringIO()
+			traceback.print_exc(file=out)
+			current_app.logger.error('\033[1;31mERROR caught inside api:\033[0m\n%s\n' % out.getvalue())
 
 			# TODO: hide debug information for production deployment
 			resp = make_response((jsonify({'error': '%s' % e}), 500, {}))
