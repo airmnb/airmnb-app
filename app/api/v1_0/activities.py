@@ -27,7 +27,11 @@ def get_activities():
 @caps()
 def get_ongoing_activities():
 	user = g.current_user
-	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status == 0).order_by(m.Activity.name).all()
+	activities = m.Activity.query \
+		.filter(m.Activity.providerId == user.userId) \
+		.filter(m.Activity.status == 0) \
+		.order_by(m.Activity.name) \
+		.all()
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
@@ -37,7 +41,11 @@ def get_ongoing_activities():
 @caps()
 def get_closed_activities():
 	user = g.current_user
-	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status != 0).order_by(m.Activity.name).all()
+	activities = m.Activity.query \
+		.filter(m.Activity.providerId == user.userId) \
+		.filter(m.Activity.status != 0) \
+		.order_by(m.Activity.name) \
+		.all()
 	return jsonify(activities=m.Activity.dump(activities))
 
 

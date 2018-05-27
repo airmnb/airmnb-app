@@ -136,7 +136,7 @@ class ActivitySchema(Schema):
 		return [i.imageId for i in obj.images]
 	class Meta:
 		fields = ('activityId', 'name', 'info', 'venue', 'price', 'capacity', 
-			'tags', 'gender', 'imageIds')
+			'tags', 'gender', 'imageIds', 'status')
 
 
 # ActivityImage
