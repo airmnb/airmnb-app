@@ -135,8 +135,9 @@ def create_new_activity():
 		SS.add(timeslot)
 		# add vacancies
 		timeslot = m.TimeSlot(activityId=activity.activityId, start=start, end=end)
-		vacancy = m.Vacancy(activityId=activity.activityId, timeslotId=timeslot.timeslotId)
-		SS.add(vacancy)
+		for i in range(data['capacity']):
+			vacancy = m.Vacancy(activityId=activity.activityId, timeslotId=timeslot.timeslotId)
+			timeslot.vacancies.add(vacancy)
 	SS.flush()
 	return jsonify(message=_('created activity {0} successfully'
 		).format(activity.activityId),
@@ -162,50 +163,23 @@ def update_new_activity():
 				helper.check_uuid_is_valid,
 				check_venue_existence,
 			]),
-		# Field('providerId', is_mandatory=True, default=lambda: g.current_user.userId),
-		Field('gender'),
-		Field('price'),
-		Field('currency'),
-		Field('capacity', validators=[
-			# validators.is_number, (), dict(min_value=1)
-			]),
-		Field('startDate', is_mandatory=False, ),
-			# normalizers=[
-			# 	helper.normalize_date,
-			# ]),
-		Field('endDate', is_mandatory=False, ),
-			# normalizers=[
-			# 	helper.normalize_date,
-			# ]),
-		Field('startTime', is_mandatory=True, ),
-			# normalizers=[
-			# 	helper.normalize_time,
-			# ]),
-		Field('endTime', is_mandatory=True, ),
-			# normalizers=[
-			# 	helper.normalize_time,
-			# ]),
 		Field('imageIds', is_mandatory=False, validators=[
 			check_image_ids,
 			]),
-		Field('daysOfWeek', is_mandatory=False, ),
-			# normalizers=[
-			# 	helper.normalize_week_day_mask
-			# ]),
 	).get_data(copy=True)
 
-	startDate = data.pop('startDate')
-	endDate = data.pop('endDate')
-	startTime = data.pop('startTime')
-	endTime = data.pop('endTime')
-	imageIds = data.pop('imageIds')
-	daysOfWeek = data.pop('daysOfWeek')
+	for key in ['name', 'info']:
+		if data[key] != getattr(activity, key):
+			setattr(activity, key, data[key])
 
-	activity = m.Activity(**data)
-	SS.add(activity)
-	SS.flush()
+	if 'imageIds' in data:
+		for i in activity.images:
+			SS.delete(i)
+		for imageId in data['imageIds']:
+			SS.add(m.ActivityImage(activityId=activity.activityId, imageId=imageId))
+		SS.flush()
 
-	return jsonify(message=_('created activity {0} successfully'
+	return jsonify(message=_('updated activity {0} successfully'
 		).format(activity.activityId),
 		activity=m.Activity.dump(activity),
 	)
