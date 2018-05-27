@@ -20,6 +20,7 @@ def get_activities():
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId).order_by(m.Activity.name).all()
 	return jsonify(activities=m.Activity.dump(activities))
 
+
 @bp.route(_name + '/ongoing', methods=['GET'])
 @api
 @caps()
@@ -29,6 +30,7 @@ def get_ongoing_activities():
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
+
 @bp.route(_name + '/closed', methods=['GET'])
 @api
 @caps()
@@ -36,6 +38,7 @@ def get_closed_activities():
 	user = g.current_user
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status != 0).order_by(m.Activity.name).all()
 	return jsonify(activities=m.Activity.dump(activities))
+
 
 @bp.route(_name + '/recommended', methods=['GET'])
 @api
@@ -46,10 +49,10 @@ def get_recommended_activities():
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
+
 def check_uuid_availability(data, key, activityId):
 	if m.Activity.query.get(activityId):
 		raise ValueError(_('activityId \'{0}\' is already in use').format(activityId))
-
 
 def check_venue_existence(data, key, venueId):
 	if not m.Venue.query.get(venueId):
@@ -105,6 +108,90 @@ def create_new_activity():
 			# normalizers=[
 			# 	helper.normalize_week_day_mask
 			# ]),
+		Field('location', is_mandatory=False,)
+	).get_data(copy=True)
+
+	startDate = data.pop('startDate')
+	endDate = data.pop('endDate')
+	startTime = data.pop('startTime')
+	endTime = data.pop('endTime')
+	imageIds = data.pop('imageIds')
+	daysOfWeek = data.pop('daysOfWeek')
+
+	activity = m.Activity(**data)
+	SS.add(activity)
+	SS.flush()
+
+	# add images
+	for imageId in imageIds:
+		SS.add(m.ActivityImage(activityId=activity.activityId, imageId=imageId))
+
+	# add time slots
+	st = datetime.datetime.strptime(startTime, '%H:%M').time()
+	et = datetime.datetime.strptime(endTime, '%H:%M').time()
+	for d in helper.enumerate_dates(startDate, endDate, daysOfWeek):
+		start = datetime.datetime(d.year, d.month, d.day, st.hour, st.minute, st.second)
+		end = datetime.datetime(d.year, d.month, d.day, et.hour, et.minute, et.second)
+		SS.add(timeslot)
+		# add vacancies
+		timeslot = m.TimeSlot(activityId=activity.activityId, start=start, end=end)
+		vacancy = m.Vacancy(activityId=activity.activityId, timeslotId=timeslot.timeslotId)
+		SS.add(vacancy)
+	SS.flush()
+	return jsonify(message=_('created activity {0} successfully'
+		).format(activity.activityId),
+		activity=m.Activity.dump(activity),
+	)
+
+
+@bp.route(_name + '/<activityId>', methods=['PUT'])
+@api
+@caps()
+def update_new_activity():
+	activity = m.Activity.query.get(activityId)
+	if not activityId:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+
+	data = MyForm(
+		Field('name', is_mandatory=True, validators=[
+			validators.non_blank,
+			]),
+		Field('info'),
+		Field('venueId', is_mandatory=True,
+			validators=[
+				helper.check_uuid_is_valid,
+				check_venue_existence,
+			]),
+		# Field('providerId', is_mandatory=True, default=lambda: g.current_user.userId),
+		Field('gender'),
+		Field('price'),
+		Field('currency'),
+		Field('capacity', validators=[
+			# validators.is_number, (), dict(min_value=1)
+			]),
+		Field('startDate', is_mandatory=False, ),
+			# normalizers=[
+			# 	helper.normalize_date,
+			# ]),
+		Field('endDate', is_mandatory=False, ),
+			# normalizers=[
+			# 	helper.normalize_date,
+			# ]),
+		Field('startTime', is_mandatory=True, ),
+			# normalizers=[
+			# 	helper.normalize_time,
+			# ]),
+		Field('endTime', is_mandatory=True, ),
+			# normalizers=[
+			# 	helper.normalize_time,
+			# ]),
+		Field('imageIds', is_mandatory=False, validators=[
+			check_image_ids,
+			]),
+		Field('daysOfWeek', is_mandatory=False, ),
+			# normalizers=[
+			# 	helper.normalize_week_day_mask
+			# ]),
 	).get_data(copy=True)
 
 	startDate = data.pop('startDate')
@@ -122,6 +209,7 @@ def create_new_activity():
 		).format(activity.activityId),
 		activity=m.Activity.dump(activity),
 	)
+
 
 @bp.route(_name + '/<activityId>', methods=['GET'])
 @api

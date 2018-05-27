@@ -119,8 +119,7 @@ class Activity(Base):
 	venue = relationship('Venue')
 	provider = relationship('User')
 	images = relationship('ActivityImage')
-	# TODO: activity_image is still needed?
-	activity_image = synonym('images')
+	timeslots = relationship('Timeslot')
 	@property
 	def tags(self):
 		return SS.query(Tag).filter(
@@ -157,7 +156,8 @@ class ActivityTag(Base):
 # Timeslot
 class Timeslot(Base):
 	__table__ = t_timeslots
-	activity = relationship(Activity)
+	vacacies = relationship('Vacancy')
+
 
 class TimeslotSchema(Schema):
 	activity = fields.Nested('Activity')

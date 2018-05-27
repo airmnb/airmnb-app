@@ -30,3 +30,19 @@ def normalize_time(data, key, time_literal):
 
 def normalize_week_day_mask(data, key, week_day_mask):
 	return ''
+
+
+def enumerate_dates(start_date, end_date, days_of_week):
+	mask = int(days_of_week) & 127
+	week_day_bit_mask = {}
+	if (isinstance(start_date, datetime.datetime)):
+		start_date = start_date.date()
+	if (isinstance(end_date, datetime.datetime)):
+		end_date = end_date.date()
+	while start_date <= end_date:
+		week_day = start_date.weekday()	# mon = 0, tue = 1, ..., sun = 6
+		bit_mask = week_day_bit_mask.setdefault(week_day, pow(2, week_day + 1))
+		if mask & bit_mask:
+			yield start_date
+		start_date += datetime.timedelta(days=1)
+
