@@ -86,14 +86,14 @@ def create_new_activity():
 		Field('capacity', validators=[
 			# validators.is_number, (), dict(min_value=1)
 			]),
-		Field('startDate', is_mandatory=False, ),
-			# normalizers=[
-			# 	helper.normalize_date,
-			# ]),
-		Field('endDate', is_mandatory=False, ),
-			# normalizers=[
-			# 	helper.normalize_date,
-			# ]),
+		Field('startDate', is_mandatory=False,
+			normalizers=[
+				helper.normalize_date,
+			]),
+		Field('endDate', is_mandatory=False,
+			normalizers=[
+				helper.normalize_date,
+			]),
 		Field('startTime', is_mandatory=True, ),
 			# normalizers=[
 			# 	helper.normalize_time,
