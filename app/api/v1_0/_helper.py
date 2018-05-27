@@ -20,8 +20,9 @@ def normalize_uuid(data, key, uuid_value):
 	return str(uuid_value)
 
 def normalize_date(data, key, date_literal):
+	print('normalize_date')
 	# input date must be formatted as '2018-12-31T00:00:00+1000'
-	timestamp = datetime.datetime.strptime('%Y-%m-%dT%H:%M:%S%z')
+	timestamp = datetime.datetime.strptime(date_literal, '%Y-%m-%d')
 	return timestamp
 
 def normalize_time(data, key, time_literal):

@@ -87,31 +87,31 @@ def create_new_activity():
 			# validators.is_number, (), dict(min_value=1)
 			]),
 		Field('startDate', is_mandatory=False,
-			normalizers=[
+			normalizer=
 				helper.normalize_date,
-			]),
+			),
 		Field('endDate', is_mandatory=False,
-			normalizers=[
+			normalizer=
 				helper.normalize_date,
-			]),
+			),
 		Field('startTime', is_mandatory=True, ),
-			# normalizers=[
+			# normalizer=[
 			# 	helper.normalize_time,
 			# ]),
 		Field('endTime', is_mandatory=True, ),
-			# normalizers=[
+			# normalizer=[
 			# 	helper.normalize_time,
 			# ]),
 		Field('imageIds', is_mandatory=False, validators=[
 			# check_image_ids,
 			]),
 		Field('daysOfWeek', is_mandatory=True, default=lambda: 127),
-			# normalizers=[
+			# normalizer=[
 			# 	helper.normalize_week_day_mask
 			# ]),
 		Field('location', is_mandatory=False,)
 	).get_data(copy=True)
-
+	print('data is', data)
 	startDate = data.pop('startDate')
 	endDate = data.pop('endDate')
 	startTime = data.pop('startTime')
