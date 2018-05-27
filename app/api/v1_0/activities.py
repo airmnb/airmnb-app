@@ -40,6 +40,17 @@ def get_closed_activities():
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status != 0).order_by(m.Activity.name).all()
 	return jsonify(activities=m.Activity.dump(activities))
 
+@bp.route(_name + '/recommended', methods=['GET'])
+@api
+@caps()
+def get_recommended_activities():
+	user = g.current_user
+	activities = m.Activity.query.filter(m.Activity.status == 0).order_by(m.Activity.name).limit(10).all()
+	activityJsons = m.Activity.dump(activities)
+	for activity in activityJsons:
+		activity['imageIds'] = get_activity_images(activity['activityId'])
+	return jsonify(activities=activityJsons)
+
 def check_uuid_availability(data, key, activityId):
 	if m.Activity.query.get(activityId):
 		raise ValueError(_('activityId \'{0}\' is already in use').format(activityId))
