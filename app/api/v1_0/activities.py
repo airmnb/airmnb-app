@@ -27,9 +27,6 @@ def get_ongoing_activities():
 	user = g.current_user
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId and m.Activity.status == 0).order_by(m.Activity.name).all()
 	activityJsons = m.Activity.dump(activities)
-	for activity in activityJsons:
-		activity['imageIds'] = get_activity_images(activity['activityId'])
-
 	return jsonify(activities=activityJsons)
 
 @bp.route(_name + '/closed', methods=['GET'])
@@ -47,8 +44,6 @@ def get_recommended_activities():
 	user = g.current_user
 	activities = m.Activity.query.filter(m.Activity.status == 0).order_by(m.Activity.name).limit(10).all()
 	activityJsons = m.Activity.dump(activities)
-	for activity in activityJsons:
-		activity['imageIds'] = get_activity_images(activity['activityId'])
 	return jsonify(activities=activityJsons)
 
 def check_uuid_availability(data, key, activityId):
@@ -135,8 +130,6 @@ def get_activity(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
 		raise InvalidUsage(_('activity {0} not found').format(activityId), 404)
-
-	activity.imageIds = get_activity_images(activityId)
 	return jsonify(activity=m.Activity.dump(activity))
 
 
