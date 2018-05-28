@@ -88,10 +88,10 @@ def create_new_activity():
 				# check_venue_existence,
 			]),
 		Field('providerId', is_mandatory=True, default=lambda: g.current_user.userId),
-		Field('gender'),
-		Field('price'),
+		Field('gender', is_mandatory=True, default=lambda: 3),
+		Field('price', is_mandatory=True, default=lambda: 0),
 		Field('currency'),
-		Field('capacity', validators=[
+		Field('capacity', is_mandatory=True, default=lambda: 1, validators=[
 			# validators.is_number, (), dict(min_value=1)
 			]),
 		Field('startDate', is_mandatory=False,
@@ -113,10 +113,11 @@ def create_new_activity():
 		Field('imageIds', is_mandatory=False, validators=[
 			# check_image_ids,
 			]),
-		Field('daysOfWeek', is_mandatory=True, default=lambda: 127),
+		Field('daysOfWeek', is_mandatory=True, default=lambda: 127), # 127 = all weekdays
 			# normalizer=[
 			# 	helper.normalize_week_day_mask
 			# ]),
+		Field('status', is_mandatory=True, default=lambda: 0),
 		Field('location', is_mandatory=False,)
 	).get_data(copy=True)
 	print('data is', data)
@@ -132,7 +133,10 @@ def create_new_activity():
 		location = None
 
 	if location:
-		venue = m.Venue(longitude=location['longitude'], latitude=location['latitude'], addr1='-', providerId = data['providerId'])
+		venue = m.Venue(name=location.get('name'), \
+			longitude=location['longitude'], latitude=location['latitude'], \
+			addr1=location.get('addr1'), city=location.get('city'), state=location.get('state'), \
+			country=location.get('country'), providerId = data['providerId'])
 		SS.add(venue)
 		SS.flush()
 		data['venueId'] = venue.venueId
@@ -171,7 +175,7 @@ def create_new_activity():
 @bp.route(_name + '/<activityId>', methods=['PUT'])
 @api
 @caps()
-def update_new_activity():
+def update_new_activity(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activityId:
 		raise InvalidUsage(_('activity {} not found').format(activityId))
