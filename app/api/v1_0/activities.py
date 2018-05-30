@@ -39,7 +39,7 @@ def get_map_activities():
     	.op('@>')(db.func.ll_to_earth(m.Venue.latitude, m.Venue.longitude)) \
 		) \
 		.filter(m.Activity.status == 0) \
-		.filter(m.Activity.providerId != user.userId) \
+		# .filter(m.Activity.providerId != user.userId) \
 		.order_by(m.Activity.name) \
 		.limit(limit) \
 		.all()
