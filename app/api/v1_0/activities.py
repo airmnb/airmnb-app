@@ -3,6 +3,7 @@ from flask import request, session, jsonify, g
 
 import datetime
 import db.model as m
+from db import database as db
 from db.db import SS
 from app.api import api, caps, MyForm, Field, validators
 from app.i18n import get_text as _
@@ -20,6 +21,30 @@ def get_activities():
 	user = g.current_user
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId).order_by(m.Activity.name).all()
 	return jsonify(activities=m.Activity.dump(activities))
+
+
+@bp.route(_name + '/map', methods=['GET'])
+@api
+@caps()
+def get_map_activities():
+	center_latitude = request.args['clat']
+	center_longitude = request.args['clng']
+	radius_meters = request.args['radius']
+	limit = request.args.get('limit', 10)
+	user = g.current_user
+	activities = m.Activity.query \
+		.filter(
+			db.func \
+			.earth_box(db.func.ll_to_earth(center_latitude, center_longitude), radius_meters) \
+    	.op('@>')(db.func.ll_to_earth(m.Venue.latitude, m.Venue.longitude)) \
+		) \
+		.filter(m.Activity.status == 0) \
+		.filter(m.Activity.providerId != user.userId) \
+		.order_by(m.Activity.name) \
+		.limit(limit) \
+		.all()
+	activityJsons = m.Activity.dump(activities)
+	return jsonify(activities=activityJsons)
 
 
 @bp.route(_name + '/ongoing', methods=['GET'])
