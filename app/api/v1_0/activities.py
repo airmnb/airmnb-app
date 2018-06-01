@@ -115,6 +115,8 @@ def create_new_activity():
 		Field('gender', is_mandatory=True, default=lambda: 3),
 		Field('price', is_mandatory=True, default=lambda: 0),
 		Field('currency'),
+		Field('category', is_mandatory=False, default=lambda: 0, validators=[
+		]),
 		Field('capacity', is_mandatory=True, default=lambda: 1, validators=[
 			# validators.is_number, (), dict(min_value=1)
 			]),
