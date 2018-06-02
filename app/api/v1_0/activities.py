@@ -29,7 +29,7 @@ def get_activities():
 def get_map_activities():
 	center_latitude = request.args['clat']
 	center_longitude = request.args['clng']
-	radius_meters = request.args['radius']
+	radius_meters = request.args.get('radius', 2000)
 	limit = request.args.get('limit', 10)
 	user = g.current_user
 	activities = m.Activity.query \

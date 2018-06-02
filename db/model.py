@@ -73,7 +73,7 @@ class UserSchema(Schema):
 	class Meta:
 		# password (encryption) and salt must never be dumped
 		fields = ('userId','accountName', 'source',
-			'email', 'phone', 'familyName', 'givenName', 'fullName',
+			'email', 'phone', 'familyName', 'givenName', 'fullName', 'language',
 			'gender', 'dob', 'lastAccessAt', 'createdAt')
 		exclude = ('password', 'salt')
 

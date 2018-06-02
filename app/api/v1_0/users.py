@@ -42,6 +42,7 @@ def update_user(userId):
 		Field('dob'),
 		Field('email'),
 		Field('phone'),
+		Field('language'),
 	).get_data()
 	for k, v in data.items():
 		setattr(user, k, v)
