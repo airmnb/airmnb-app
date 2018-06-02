@@ -117,6 +117,8 @@ def create_new_activity():
 		Field('currency'),
 		Field('category', is_mandatory=False, default=lambda: 0, validators=[
 		]),
+		Field('minAge', is_mandatory=False, validators=[]),
+		Field('maxAge', is_mandatory=False, validators=[]),
 		Field('capacity', is_mandatory=True, default=lambda: 1, validators=[
 			# validators.is_number, (), dict(min_value=1)
 			]),
@@ -151,8 +153,7 @@ def create_new_activity():
 	endDate = data.pop('endDate')
 	startTime = data.pop('startTime')
 	endTime = data.pop('endTime')
-	imageIds = data.pop('imageIds')
-	daysOfWeek = data.pop('daysOfWeek')
+	daysOfWeek = data.get('daysOfWeek')
 	try:
 		location = data.pop('location')
 	except :
@@ -172,6 +173,7 @@ def create_new_activity():
 	SS.flush()
 
 	# add images
+	imageIds = data.get('imageIds', [])
 	for imageId in imageIds:
 		SS.add(m.ActivityImage(activityId=activity.activityId, imageId=imageId))
 

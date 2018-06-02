@@ -135,7 +135,8 @@ class ActivitySchema(Schema):
 	def get_image_ids(self, obj):
 		return [i.imageId for i in obj.images]
 	class Meta:
-		fields = ('activityId', 'name', 'info', 'category', 'daysOfWeek', 'capacity', 'gender', 
+		fields = ('activityId', 'name', 'info', 'category', 'minAge', 'maxAge',
+			'daysOfWeek', 'capacity', 'gender', 'daysOfWeek',
 			'venue', 'price', 'tags', 'imageIds', 'status')
 
 
