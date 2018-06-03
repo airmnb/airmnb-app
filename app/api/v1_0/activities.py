@@ -119,25 +119,24 @@ def create_new_activity():
 		]),
 		Field('minAge', is_mandatory=False, validators=[]),
 		Field('maxAge', is_mandatory=False, validators=[]),
-		Field('capacity', is_mandatory=True, default=lambda: 1, validators=[
-			# validators.is_number, (), dict(min_value=1)
-			]),
+		Field('capacity', is_mandatory=True,
+			default=lambda: 1,
+			validators=[
+				# validators.is_number, (), dict(min_value=1)
+			],
+			),
 		Field('startDate', is_mandatory=False,
-			normalizer=
-				helper.normalize_date,
+			normalizer=helper.normalize_date,
 			),
 		Field('endDate', is_mandatory=False,
-			normalizer=
-				helper.normalize_date,
+			normalizer=helper.normalize_date,
 			),
-		Field('startTime', is_mandatory=True, ),
-			# normalizer=[
-			# 	helper.normalize_time,
-			# ]),
-		Field('endTime', is_mandatory=True, ),
-			# normalizer=[
-			# 	helper.normalize_time,
-			# ]),
+		Field('startTime', is_mandatory=True,
+			normalizer=helper.normalize_time,
+			),
+		Field('endTime', is_mandatory=True,
+			normalizer=helper.normalize_time,
+			),
 		Field('imageIds', is_mandatory=False, validators=[
 			# check_image_ids,
 			]),
@@ -149,10 +148,6 @@ def create_new_activity():
 		Field('location', is_mandatory=False,)
 	).get_data(copy=True)
 	print('data is', data)
-	startDate = data.pop('startDate')
-	endDate = data.pop('endDate')
-	startTime = data.pop('startTime')
-	endTime = data.pop('endTime')
 	daysOfWeek = data.get('daysOfWeek')
 	try:
 		location = data.pop('location')

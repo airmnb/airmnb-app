@@ -26,7 +26,7 @@ def normalize_date(data, key, date_literal):
 	return timestamp
 
 def normalize_time(data, key, time_literal):
-	timestamp = datetime.datetime.strptime('%H:%M:%S')
+	timestamp = datetime.datetime.strptime(time_literal, '%H:%M')
 	return timestamp
 
 def normalize_week_day_mask(data, key, week_day_mask):
