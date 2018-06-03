@@ -204,8 +204,10 @@ def create_app(config_name):
 	def authorization_response():
 		state_literal = request.args.get('state', '')
 		print('state literal is %r' % state_literal)
+		in_app_redirect = ''
 		try:
 			state = eval(state_literal)
+			in_app_redirect = state.get('r', '')
 		except:
 			state = {}
 		print('state returned from incoming request is', state)
@@ -293,7 +295,11 @@ def create_app(config_name):
 		token = jwt.encode(payload, os.environ.get('SECRET') or '')
 		# return redirect(location=url_for('catch_all', jwt=token, _external=True))
 		# return redirect(location=url_for('dashboard', jwt=token, _external=True))
-		return redirect(location=url_for('catch_all', _external=True))
+		if in_app_redirect:
+			location = url_for('catch_all', r=in_app_redirect, _external=True)
+		else:
+			location = url_for('catch_all', _external=True)
+		return redirect(location=)
 
 
 	@app.route('/sys/debug', methods=['OPTIONS','GET', 'POST', 'PUT', 'DELETE'])
@@ -378,6 +384,7 @@ def create_app(config_name):
 	def login():
 		identity_provider = request.args.get('use', '')
 		session_id = request.args.get('session_id', '')
+		in_app_redirect = request.args.get('r', '')
 		sessionId = session_id
 		# TODO: validate session_id
 
@@ -385,12 +392,14 @@ def create_app(config_name):
 			log.debug('login with google')
 			state_dict['provider'] = 'google'
 			state_dict['session_id'] = session_id
+			state_dict['r'] = in_app_redirect
 			callback = url_for('authorization_response', _external=True)
 			return google.authorize(callback=callback)
 		elif identity_provider == 'facebook':
 			log.debug('loging with facebook')
 			state_dict['provider'] = 'facebook'
 			state_dict['session_id'] = session_id
+			state_dict['r'] = in_app_redirect
 			callback = url_for('authorization_response', _external=True)
 			return facebook.authorize(callback=callback)
 
