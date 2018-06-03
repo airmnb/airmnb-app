@@ -134,9 +134,16 @@ class ActivitySchema(Schema):
 	imageIds = fields.Method('get_image_ids')
 	def get_image_ids(self, obj):
 		return [i.imageId for i in obj.images]
+	startTime = fields.Method('get_starttime_literal')
+	endTime = fields.Method('get_endtime_literal')
+	def get_starttime_literal(self, obj):
+		return obj.startTime.strftime("%H:%M")
+	def get_endtime_literal(self, obj):
+		return obj.endTime.strftime("%H:%M")
 	class Meta:
 		fields = ('activityId', 'name', 'info', 'category', 'minAge', 'maxAge',
 			'daysOfWeek', 'capacity', 'gender', 'daysOfWeek',
+			'startDate', 'startTime', 'endDate', 'endTime',
 			'venue', 'price', 'tags', 'imageIds', 'status')
 
 

@@ -2,6 +2,7 @@
 from flask import request, session, jsonify, g
 
 import datetime
+from dateutil.tz import tzoffset
 import db.model as m
 from db import database as db
 from db.db import SS
@@ -96,6 +97,9 @@ def check_image_ids(data, key, imageIds):
 		if not m.Image.query.get(i):
 			raise ValueError(_('image \'{0}\' is not found').format(i))
 
+def get_time_with_tz(time, offset_mins):
+	return time.replace(tzinfo=tzoffset(None, int(offset_mins)))
+
 @bp.route(_name, methods=['POST'])
 @api
 @caps()
@@ -132,11 +136,12 @@ def create_new_activity():
 			normalizer=helper.normalize_date,
 			),
 		Field('startTime', is_mandatory=True,
-			normalizer=helper.normalize_time,
+			# normalizer=helper.normalize_time,
 			),
 		Field('endTime', is_mandatory=True,
-			normalizer=helper.normalize_time,
+			# normalizer=helper.normalize_time,
 			),
+		Field('timeOffset', is_mandatory=True, default=lambda: 0),
 		Field('imageIds', is_mandatory=False, validators=[
 			# check_image_ids,
 			]),
@@ -163,18 +168,25 @@ def create_new_activity():
 		SS.flush()
 		data['venueId'] = venue.venueId
 
+	imageIds = data.pop('imageIds', [])
+
+	startDate = data['startDate']
+	endDate = data['endDate']
+	# st = data['startTime']
+	# et = data['endTime']
+	# data['startTime'] = get_time_with_tz(data['startTime'], timezone)
+	# data['endTime'] = get_time_with_tz(data['endTime'], timezone)
 	activity = m.Activity(**data)
 	SS.add(activity)
 	SS.flush()
 
 	# add images
-	imageIds = data.get('imageIds', [])
 	for imageId in imageIds:
 		SS.add(m.ActivityImage(activityId=activity.activityId, imageId=imageId))
 
 	# add time slots
-	st = datetime.datetime.strptime(startTime, '%H:%M').time()
-	et = datetime.datetime.strptime(endTime, '%H:%M').time()
+	st = datetime.datetime.strptime(data['startTime'], '%H:%M').time()
+	et = datetime.datetime.strptime(data['endTime'], '%H:%M').time()
 	for d in helper.enumerate_dates(startDate, endDate, daysOfWeek):
 		start = datetime.datetime(d.year, d.month, d.day, st.hour, st.minute, st.second)
 		end = datetime.datetime(d.year, d.month, d.day, et.hour, et.minute, et.second)
