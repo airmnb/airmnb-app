@@ -17,7 +17,7 @@ class Config:
 class DevelopmentConfig(Config):
 	DEBUG = True
 	LOG_LEVEL = logging.DEBUG
-	SERVER_NAME = 'development.server'
+	# SERVER_NAME = 'development.server'
 
 	AMB_FACEBOOK_APP_KEY = os.environ['AMB_FACEBOOK_APP_KEY']
 	AMB_FACEBOOK_APP_SECRET = os.environ['AMB_FACEBOOK_APP_SECRET']
