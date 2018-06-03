@@ -299,7 +299,7 @@ def create_app(config_name):
 			location = url_for('catch_all', r=in_app_redirect, _external=True)
 		else:
 			location = url_for('catch_all', _external=True)
-		return redirect(location=)
+		return redirect(location=location)
 
 
 	@app.route('/sys/debug', methods=['OPTIONS','GET', 'POST', 'PUT', 'DELETE'])
