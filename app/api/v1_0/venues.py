@@ -23,7 +23,7 @@ def get_venues():
 	if providerId:
 		venues = m.Venue.query.filter(m.Venue.providerId == providerId).order_by(m.Venue.createdAt).all()
 	else:
-		venues = m.Venue.query.order_by(m.Venue.createdAt).all()
+		venues = []
 	return jsonify(venues=m.Venue.dump(venues))
 
 @bp.route(_name + '/<venueId>', methods=['GET'])
