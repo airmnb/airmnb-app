@@ -161,6 +161,14 @@ class ActivityTag(Base):
 	__table__ = t_activity_tags
 
 
+# ActivityReview
+class ActivityReview(Base):
+	__table__ = t_activity_reviews
+	
+# ActivityResponse
+class ActivityResponse(Base):
+	__table__ = t_activity_responses
+
 # Timeslot
 class Timeslot(Base):
 	__table__ = t_timeslots
