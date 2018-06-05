@@ -294,10 +294,10 @@ def post_activity_review(activityId):
 		Field('activityId', is_mandatory=True, default=activityId),
 		Field('reviewerId', is_mandatory=True, default=lambda: g.current_user.userId),
 		Field('stars', is_mandatory=True, validators=[
-			(validators.is_number, (), {min_value: 0, max_value: 5}),
+			(validators.is_number, (), dict(min_value=0, max_value=5)),
 			]),
 		Field('content'),
-		)
+		).get_data()
 	#
 	# TODO: check if user (userId) is a consumer of activity (activityId)
 	#

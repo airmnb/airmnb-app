@@ -50,7 +50,20 @@ def create_app(config_name):
 	app.config.from_object(config[config_name])
 	config[config_name].init_app(app)
 	db.init_app(app)
-	CORS(app, resources={'*': {'origins': '*'}})
+
+	#
+	# See this page for options:
+	# https://flask-cors.corydolphin.com/en/latest/api.html#extension
+	CORS(app, resources={'*': dict(
+		origins='*',
+		#methods= default: [GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE]
+		#expose_headers (list or string)
+		allow_headers='*',
+		#supports_credentials=True, # default False
+    	#max_age # Sets Access-Control-Max-Age header.
+    	send_wildcard=True, #If True,Access-Control-Allow-Origin
+    	#vary_header
+   		)})
 
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
