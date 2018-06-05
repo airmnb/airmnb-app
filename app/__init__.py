@@ -35,6 +35,7 @@ def generate_salt(length=10):
 	random.shuffle(salt)
 	return ''.join(salt)
 
+
 def encrypt(accountName, password, salt):
 	sha = hashlib.sha256()
 	sha.update(accountName.encode('utf-8'))
@@ -49,7 +50,7 @@ def create_app(config_name):
 	app.config.from_object(config[config_name])
 	config[config_name].init_app(app)
 	db.init_app(app)
-	# CORS(app, resources={'/api/1.0/*': {'origins': '*'}, '/sys/*': {'origins': '*'}})
+	CORS(app, resources={'*': {'origins': '*'}})
 
 	public_url_patterns = list(map(re.compile, [
 		'/static/',
@@ -74,9 +75,7 @@ def create_app(config_name):
 	app.register_blueprint(api_1_0, url_prefix='/api/1.0')
 
 	oauth = OAuth()
-
-
-	state_dict = {}	# to be propulated by login handler
+	state_dict = {}
 
 	google = oauth.remote_app('google',
 		base_url=None,
@@ -132,17 +131,17 @@ def create_app(config_name):
 			if not auth_header.lower().startswith('bearer '):
 				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
 			token = auth_header[7:]
-			print('decoded token from authoization header', token)
+			log.debug('decoded token from authoization header: %s' % token)
 			try:
 				payload = jwt.decode(token, os.environ.get('SECRET') or '')
-				print('payload decoded from header', payload)
+				log.debug('payload decoded from header %r' % payload)
 				sessionId = payload['sessionId']
 				# userId = payload['userId']
 				#expires = datetime.datetime.strpfmt(payload['expires'], '%Y-%m-%dT%H:%M:%S%z')
 				ses = m.Session.query.get(sessionId)
 				userId = ses.userId
 			except Exception as e:
-				print('Exception is', e)
+				log.debug('Exception is %r' % e)
 				raise RuntimeError('Authorization header not valid: {}'.format(auth_header))
 			if userId is None:
 				raise RuntimeError('session not attached to user')
@@ -150,9 +149,9 @@ def create_app(config_name):
 			# if expires < now:
 			# 	# session expires
 			# 	raise ValueError('session expired at {}, now {}'.format(expires, now))
-			print('Trying to get user {}'.format(userId))
+			log.debug('Trying to get user {}'.format(userId))
 			user = m.User.query.get(userId)
-			print('user decoded from header: ', user.dump(user))
+			log.debug('user decoded from header: {}'.format(user.dump(user)))
 			if user:
 				# authentication succeeded
 				g.current_user = user
@@ -161,20 +160,20 @@ def create_app(config_name):
 
 		except Exception as e:
 			# authentication failed
-			print('authentication failed: {}'.format(e))
-			print('request.path', request.path)
+			log.debug('authentication failed: {}'.format(e))
+			log.debug('request.path %s' % request.path)
 			if request.path == '/sys/whoami':
 				# create a new session
-				print('requesting /session but authentication failed, about to create a new one');
+				log.debug('requesting /session but authentication failed, about to create a new one');
 				three_days_later = datetime.datetime.now() + datetime.timedelta(days=3)
 				ses = m.Session(sessionExpiresAt=three_days_later)
 				SS.add(ses)
 				SS.commit()
-				print('Session is', ses.dump(ses))
+				log.debug('Session is %r' % ses.dump(ses))
 				payload = {
 					'sessionId': ses.sessionId
 				}
-				print('payload is', payload)
+				log.debug('payload is %r' % payload)
 				sessionToken = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
 				return make_response(jsonify(sessionToken=sessionToken, sessionId=ses.sessionId),
 					401, {'Content-Type': 'application/json'})
@@ -192,31 +191,33 @@ def create_app(config_name):
 				401, {'Content-Type': 'application/json'})
 		return redirect(location='/#/login')
 
+
 	@app.after_request
 	def apply_cors_headers(response):
-		print('always allow access from any origin')
+		log.debug('always allow access from any origin')
 		response.headers['Access-Control-Allow-Origin'] = '*'
 		response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
 		response.headers['Access-Control-Allow-Headers'] = 'Authorization,X-Requested-With,Content-Type,Accept,Origin'
 		return response
 
+
 	@app.route('/sys/authorization_response')
 	def authorization_response():
+		log.debug('authorization_response()')
 		state_literal = request.args.get('state', '')
-		print('state literal is %r' % state_literal)
+		log.debug('state literal is %r' % state_literal)
 		in_app_redirect = ''
 		try:
 			state = eval(state_literal)
 			in_app_redirect = state.get('r', '')
 		except:
 			state = {}
-		print('state returned from incoming request is', state)
+		log.debug('state returned from incoming request is %r' % state)
 
 		if state.get('provider') == 'google':
 			provider = google
 		elif state.get('provider') == 'facebook':
 			provider = facebook
-
 
 		# retrieve the access_token using code from authorization grant
 		try:
@@ -260,7 +261,7 @@ def create_app(config_name):
 			except Exception as e:
 				print (e)
 				pass
-			print('data is', data)
+			log.debug('data retrieved from facebook\'s GraphQL: %r' % data)
 			email = data['email']
 			try:
 				user = m.User.query.filter(m.User.email==email).one()
@@ -323,12 +324,12 @@ def create_app(config_name):
 		secret = os.environ['AMB_WEAPP_APP_SECRET']
 		url = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type=authorization_code".format(app_id, secret, code)
 		response = requests.get(url)
-		print(response.content)
+		log.debug(response.content)
 		if(response.ok):
 			jdata = json.loads(response.content.decode('utf-8'))
 			if(not 'errcode' in jdata):
 				openid = jdata['openid']
-				print('weapp openid', openid)
+				log.debug('weapp openid %s' % openid)
 				# TOOD: Add logic to get_or_set AirMnb profile
 				wechatUser = m.WechatUser.query.filter(m.WechatUser.openId == openid).one_or_none()
 				if(wechatUser is None):

@@ -270,3 +270,40 @@ def delete_activity(activityId):
 	return jsonify(message=_('activity {0} was deleted successfully'
 		).format(activityId))
 
+
+@bp.route(_name + '/<activityId>/reviews/', methods=['GET'])
+def get_activity_reviews(activityId):
+	activity = m.Activity.query.get(activityId)
+	if not activity:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+	reviews = m.ActivityReview.query.filter(
+		m.ActivityReview.activityId==activityId).order_by(
+		m.ActivityReview.reviewId).all()
+	return jsonify(
+		reviews=m.ActivityReview.dump(reviews))
+
+
+@bp.route(_name + '/<activityId>/reviews/', methods=['POST'])
+@api
+@caps()
+def post_activity_review(activityId):
+	activity = m.Activity.query.get(activityId)
+	if not activity:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+	data = MyForm(
+		Field('activityId', is_mandatory=True, default=activityId),
+		Field('reviewerId', is_mandatory=True, default=lambda: g.current_user.userId),
+		Field('stars', is_mandatory=True, validators=[
+			(validators.is_number, (), {min_value: 0, max_value: 5}),
+			]),
+		Field('content'),
+		)
+	#
+	# TODO: check if user (userId) is a consumer of activity (activityId)
+	#
+	review = m.ActivityReview(**data)
+	SS.add(review)
+	SS.flush()
+	return jsonify(message=_('successfully created review {}').format(review.reviewId),
+		review=m.ActivityReview.dump(review),
+		)
