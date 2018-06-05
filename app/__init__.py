@@ -113,12 +113,12 @@ def create_app(config_name):
 
 	@app.before_request
 	def authenticate_request():
-		if request.method == 'OPTIONS' and request.path == '/sys/whoami':
+		if request.method == 'OPTIONS': #and request.path == '/sys/whoami':
 			return make_response('', 200, {
 					'Accept': 'application/json',
 					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-					'Access-Control-Allow-Headers': 'Authorization,X-Requested-With',
+					'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+					'Access-Control-Allow-Headers': 'Authorization,X-Requested-With,Content-Type,Accept,Origin',
 				})
 
 		# if os.environ.get('AMB_DEBUG_HEADER'):
