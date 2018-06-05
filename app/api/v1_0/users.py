@@ -33,14 +33,13 @@ def get_user(userId):
 @caps()
 def update_user(userId):
 	user = m.User.query.get(userId)
-	log.debug('trying to update user %r' % user)
 	if not user:
 		raise InvalidUsage(_('user {0} not found').format(userId), 404)
 	data = MyForm(
 		Field('accountName'),
 		Field('fullName'),
 		Field('gender'),
-		Field('dob'),
+		Field('dob', normalizer=helper.normalize_date),
 		Field('email'),
 		Field('phone'),
 		Field('language'),
