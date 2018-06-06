@@ -182,14 +182,14 @@ class ActivityResponseSchema(Schema):
 
 
 
-# Activityfavorite
+# Favorite
 class Favorite(Base):
 	__table__ = t_favorites
 
 
 class FavoriteSchema(Schema):
 	class Meta:
-		fields = ('favorateId', 'activityId', 'providerId', 'consumerId')
+		fields = ('favoriteId', 'activityId', 'providerId', 'consumerId')
 
 
 # Timeslot

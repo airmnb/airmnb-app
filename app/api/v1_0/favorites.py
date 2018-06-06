@@ -15,6 +15,17 @@ from . import _helper as helper
 _name = '/' + __file__.split('/')[-1].split('.')[0]
 
 
+@bp.route(_name, methods=['GET'])
+@api
+@caps()
+def get_favorite():
+	# Get consumer's favorites
+	user = g.current_user	
+	consumerId = user.userId	
+	favorites = m.Favorite.query.filter(m.Favorite.consumerId == consumerId).all()
+	return jsonify(favorites=m.Favorite.dump(favorites))
+
+
 @bp.route(_name, methods=['POST'])
 @api
 @caps()
@@ -34,11 +45,11 @@ def create_favorite():
 	#
 	# TODO: check if user (userId) is a consumer of activity (activityId)
 	#
-	favorite = m.Activityfavorite(**data)
+	favorite = m.Favorite(**data)
 	SS.add(favorite)
 	SS.flush()
 	return jsonify(message=_('successfully created favorite {}').format(favorite.favoriteId),
-		favorite=m.ActivityReview.dump(favorite),
+		favorite=m.Favorite.dump(favorite),
 		)
 
 
@@ -47,10 +58,11 @@ def create_favorite():
 @caps()
 def delete_favorite(favoriteId):
 	favorite = m.Favorite.query.get(favoriteId)
-	if not activity:
+	if not favorite:
 		raise InvalidUsage(_('Favorite {0} not found').format(favoriteId), 404)
 
 	# TODO: check other dependencies
 	SS.delete(favorite)
 	return jsonify(message=_('Favorite {0} was deleted successfully'
 		).format(favoriteId))
+
