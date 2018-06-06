@@ -307,3 +307,4 @@ def post_activity_review(activityId):
 	return jsonify(message=_('successfully created review {}').format(review.reviewId),
 		review=m.ActivityReview.dump(review),
 		)
+
