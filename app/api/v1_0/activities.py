@@ -308,3 +308,14 @@ def post_activity_review(activityId):
 		review=m.ActivityReview.dump(review),
 		)
 
+@bp.route(_name + '/<activityId>/timeslots/')
+@api
+@caps()
+def get_available_slots(activityId):
+	activity = m.Activity.query.get(activityId)
+	if not activity:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+	slots = [s for s in m.Timeslot.query.filter(m.Timeslot.activityId==activityId).all() if s.is_available]
+	return jsonify(
+		slots=m.Timeslot.dump(slots),
+	)

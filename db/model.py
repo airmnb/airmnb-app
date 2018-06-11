@@ -196,6 +196,13 @@ class FavoriteSchema(Schema):
 class Timeslot(Base):
 	__table__ = t_timeslots
 	vacancies = relationship('Vacancy')
+	TIME_ADVANCE = datetime.timedelta(hours=1)
+	@property
+	def is_bookable(self):
+		return (self.start - self.TIME_ADVANCE) >= now
+	@property
+	def is_available(self):
+		return any([not v.is_booked for v in self.vacancies])
 
 
 class TimeslotSchema(Schema):
@@ -208,7 +215,9 @@ class TimeslotSchema(Schema):
 # Vacancy
 class Vacancy(Base):
 	__table__ = t_vacancies
-
+	@property
+	def is_booked(self):
+		return self.bookedBy is not None
 
 # Session
 class Session(Base):
