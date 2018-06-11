@@ -10,6 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql import case, text, func
 from sqlalchemy.types import Integer, String
 from marshmallow import Schema, fields
+from datetime import timedelta
 
 from . import database, mode
 from .db import SS
@@ -196,7 +197,7 @@ class FavoriteSchema(Schema):
 class Timeslot(Base):
 	__table__ = t_timeslots
 	vacancies = relationship('Vacancy')
-	TIME_ADVANCE = datetime.timedelta(hours=1)
+	TIME_ADVANCE = timedelta(hours=1)
 	@property
 	def is_bookable(self):
 		return (self.start - self.TIME_ADVANCE) >= now
