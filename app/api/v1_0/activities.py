@@ -271,7 +271,7 @@ def delete_activity(activityId):
 		).format(activityId))
 
 
-@bp.route(_name + '/<activityId>/reviews/', methods=['GET'])
+@bp.route(_name + '/<activityId>/reviews', methods=['GET'])
 def get_activity_reviews(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
@@ -283,7 +283,7 @@ def get_activity_reviews(activityId):
 		reviews=m.ActivityReview.dump(reviews))
 
 
-@bp.route(_name + '/<activityId>/reviews/', methods=['POST'])
+@bp.route(_name + '/<activityId>/reviews', methods=['POST'])
 @api
 @caps()
 def post_activity_review(activityId):
@@ -308,14 +308,14 @@ def post_activity_review(activityId):
 		review=m.ActivityReview.dump(review),
 		)
 
-@bp.route(_name + '/<activityId>/timeslots/')
+@bp.route(_name + '/<activityId>/timeslots', methods=['GET'])
 @api
 @caps()
 def get_available_slots(activityId):
 	activity = m.Activity.query.get(activityId)
 	if not activity:
 		raise InvalidUsage(_('activity {} not found').format(activityId))
-	slots = [s for s in m.Timeslot.query.filter(m.Timeslot.activityId==activityId).all() if s.is_available]
+	timeslots = [s for s in m.Timeslot.query.filter(m.Timeslot.activityId==activityId).all() if s.is_available]
 	return jsonify(
-		slots=m.Timeslot.dump(slots),
+		timeslots=m.Timeslot.dump(timeslots),
 	)
