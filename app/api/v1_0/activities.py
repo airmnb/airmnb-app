@@ -40,7 +40,6 @@ def get_map_activities():
 			.earth_box(db.func.ll_to_earth(center_latitude, center_longitude), radius_meters) \
     	.op('@>')(db.func.ll_to_earth(m.Venue.latitude, m.Venue.longitude)) \
 		) \
-		.filter(m.Activity.status == 0) \
 		.order_by(m.Activity.name) \
 		.limit(limit) \
 		.all()
@@ -56,7 +55,6 @@ def get_ongoing_activities():
 	user = g.current_user
 	activities = m.Activity.query \
 		.filter(m.Activity.providerId == user.userId) \
-		.filter(m.Activity.status == 0) \
 		.order_by(m.Activity.name) \
 		.all()
 	activities = [a for a in activities if a.isActive]
@@ -71,7 +69,6 @@ def get_closed_activities():
 	user = g.current_user
 	activities = m.Activity.query \
 		.filter(m.Activity.providerId == user.userId) \
-		.filter(m.Activity.status != 0) \
 		.order_by(m.Activity.name) \
 		.all()
 	activities = [a for a in activities if not a.isActive]
@@ -83,7 +80,8 @@ def get_closed_activities():
 @caps()
 def get_recommended_activities():
 	user = g.current_user
-	activities = m.Activity.query.filter(m.Activity.status == 0).order_by(m.Activity.name).limit(10).all()
+	activities = m.Activity.query.order_by(m.Activity.name).limit(10).all()
+	activities = [a for a in activities if a.isActive]
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
