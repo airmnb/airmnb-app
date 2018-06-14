@@ -39,6 +39,7 @@ def create_wechatuser():
 				helper.check_uuid_is_valid,
 		]),
 		Field('openId', is_mandatory=True),
+		Field('wechatNickName'),
 		Field('avartarUrl')
 	).get_data(copy=True)
 

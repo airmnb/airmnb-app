@@ -86,7 +86,7 @@ class WechatUser(Base):
 
 class WechatUserSchema(Schema):
 	class Meta:
-		fields = ('wechatUserId', 'openId', 'avatarUrl', 'createdAt')
+		fields = ('wechatUserId', 'openId', 'wechatNickName', 'avatarUrl', 'createdAt')
 
 # Provider
 class Provider(Base): 
