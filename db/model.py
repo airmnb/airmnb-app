@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import datetime
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -121,6 +123,10 @@ class Activity(Base):
 	provider = relationship('User')
 	images = relationship('ActivityImage')
 	timeslots = relationship('Timeslot')
+	@property
+	def isActive(self):
+		return self.endDate >= datetime.datetime.now().date()
+	
 	@property
 	def tags(self):
 		return SS.query(Tag).filter(

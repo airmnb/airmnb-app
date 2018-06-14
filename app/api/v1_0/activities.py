@@ -21,6 +21,7 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 def get_activities():
 	user = g.current_user
 	activities = m.Activity.query.filter(m.Activity.providerId == user.userId).order_by(m.Activity.name).all()
+	activities = [a for a in activities if a.isActive]
 	return jsonify(activities=m.Activity.dump(activities))
 
 
@@ -43,6 +44,7 @@ def get_map_activities():
 		.order_by(m.Activity.name) \
 		.limit(limit) \
 		.all()
+	activities = [a for a in activities if a.isActive]
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
@@ -57,6 +59,7 @@ def get_ongoing_activities():
 		.filter(m.Activity.status == 0) \
 		.order_by(m.Activity.name) \
 		.all()
+	activities = [a for a in activities if a.isActive]
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
@@ -71,6 +74,7 @@ def get_closed_activities():
 		.filter(m.Activity.status != 0) \
 		.order_by(m.Activity.name) \
 		.all()
+	activities = [a for a in activities if not a.isActive]
 	return jsonify(activities=m.Activity.dump(activities))
 
 
