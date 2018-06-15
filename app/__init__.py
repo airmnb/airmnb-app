@@ -334,6 +334,7 @@ def create_app(config_name):
 		# https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html#wxloginobject
 		code = request.args['code']
 		wechatNickName = request.args.get('wechatNickName', None)
+		language = request.args.get('language', None)
 		app_id = os.environ['AMB_WEAPP_APP_ID']
 		secret = os.environ['AMB_WEAPP_APP_SECRET']
 		url = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type=authorization_code".format(app_id, secret, code)
@@ -356,6 +357,8 @@ def create_app(config_name):
 					user = m.User(**{
 						'userId': userid,
 						'source': 8,
+						'accountName': wechatNickName,
+						'language': language,
 						'lastAccessAt': datetime.datetime.utcnow(),
 					})
 					SS.add(wechatUser)
