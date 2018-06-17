@@ -121,8 +121,15 @@ def create_app(config_name):
 					'Access-Control-Allow-Headers': 'Authorization,X-Requested-With,Content-Type,Accept,Origin',
 				})
 
-		# if os.environ.get('AMB_DEBUG_HEADER'):
-		# 	return None 
+		if os.environ.get('AMB_DEBUG_HEADER'):
+			print('found AMB_DEBUG_HEADER, do further checking')
+			if 'AMB_DEBUG_HEADER' in request.headers:
+				userId = request.headers['AMB_DEBUG_HEADER']
+				if userId == os.environ['AMB_DEBUG_HEADER']:
+					user = m.User.query.get(userId)
+					if user:
+						g.current_user = user
+						return None 
 
 		for i, p in enumerate(public_url_patterns):
 			if p.match(request.path):

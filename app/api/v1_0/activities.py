@@ -310,6 +310,7 @@ def post_activity_review(activityId):
 		review=m.ActivityReview.dump(review),
 		)
 
+
 @bp.route(_name + '/<activityId>/timeslots', methods=['GET'])
 @api
 @caps()
@@ -321,3 +322,46 @@ def get_available_slots(activityId):
 	return jsonify(
 		timeslots=m.Timeslot.dump(timeslots),
 	)
+
+def check_timeslot_ids(data, key, timeslotIds, activityId):
+	vacancies = []
+	for timeslotId in timeslotIds:
+		timeslot = m.Timeslot.query.get(timeslotId)
+		if not timeslot:
+			raise ValueError(_('timeslot {} not found'.format(timeslotId)))
+		if timeslot.activityId != activityId:
+			raise ValueError(_('timeslot {} does not belong to activity {}').format(timeslotId, activityId))
+		vacancy = m.Vacancy.query.filter(
+			m.Vacancy.timeslotId==timeslotId).filter(
+			m.Vacancy.activityId==activityId).filter(
+			m.Vacancy.bookedBy.is_(None)).first()
+		if not vacancy:
+			raise ValueError(_('timeslot {} has no more vacancies').format(timeslotId))
+		vacancy.bookedBy = g.current_user.userId
+		vacancies.append(vacancy)
+	data['vacancies'] = vacancies
+
+
+@bp.route(_name + '/<activityId>/purchase', methods=['POST'])
+@api
+@caps()
+def make_purchase(activityId):
+	activity = m.Activity.query.get(activityId)
+	if not activity:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+	if not activity.isActive:
+		raise InvalidUsage(_('activity {} is not active').format(activityId))
+	data = MyForm(
+		Field('timeslotIds', is_mandatory=True,
+			validators=[
+				(check_timeslot_ids, (activityId,)),
+			]),
+	).get_data()
+	vacancies = data['vacancies']
+	for v in vacancies:
+		SS.add(v)
+	SS.flush()
+	return jsonify(
+			vacancies=m.Vacancy.dump(vacancies)
+		)
+

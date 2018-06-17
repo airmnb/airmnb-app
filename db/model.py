@@ -213,10 +213,6 @@ class Timeslot(Base):
 
 
 class TimeslotSchema(Schema):
-	activity = fields.Nested('Activity')
-	timeslot = fields.Nested('Timeslot')
-	bookedBy = fields.Nested('User')
-	vacancies = fields.Nested('Vacancy')
 	vacancyIds = fields.Method('get_vacancy_ids')
 	def get_vacancy_ids(self, obj):
 		return [v.vacancyId for v in obj.vacancies]
@@ -224,7 +220,7 @@ class TimeslotSchema(Schema):
 	def get_date(self, obj):
 		return obj.start.strftime("%Y-%m-%d")
 	class Meta:
-		fields = ('bookedBy', 'date', 'vacancyIds')
+		fields = ('timeslotId', 'date', 'vacancyIds')
 
 # Vacancy
 class Vacancy(Base):
@@ -232,6 +228,10 @@ class Vacancy(Base):
 	@property
 	def is_booked(self):
 		return self.bookedBy is not None
+
+class VacancySchema(Schema):
+	class Meta:
+		fields = ('vacancyId', 'timeslotId', 'bookedBy')
 
 # Session
 class Session(Base):
