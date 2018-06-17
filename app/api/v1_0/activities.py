@@ -61,6 +61,17 @@ def get_ongoing_activities():
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
+@bp.route(_name + '/purchased', methods=['GET'])
+@api
+@caps()
+def get_purchased_activities():
+	user = g.current_user
+	activities = m.Activity.query \
+		.join(m.Vacancy) \
+		.filter(m.Vacancy.bookedBy == user.userId) \
+		.all()
+	activityJsons = m.Activity.dump(activities)
+	return jsonify(activities=activityJsons)
 
 @bp.route(_name + '/closed', methods=['GET'])
 @api
