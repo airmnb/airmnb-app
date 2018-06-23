@@ -233,6 +233,17 @@ class VacancySchema(Schema):
 	class Meta:
 		fields = ('vacancyId', 'timeslotId', 'bookedBy')
 
+
+# Purchase
+class Purchase(Base):
+	__table__ = t_purchases
+
+class PurchaseSchema(Schema):
+	activity = relationship('Activity')
+	class Meta:
+		fields = ('purchaseId', 'providerId', 'bookedBy', 'activity')
+
+
 # Session
 class Session(Base):
 	__table__ = t_sessions
