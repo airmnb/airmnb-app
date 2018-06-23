@@ -226,12 +226,12 @@ class TimeslotSchema(Schema):
 class Vacancy(Base):
 	__table__ = t_vacancies
 	@property
-	def is_booked(self):
+	def isBooked(self):
 		return self.purchaseId is not None
 
 class VacancySchema(Schema):
 	class Meta:
-		fields = ('vacancyId', 'timeslotId', 'is_booked')
+		fields = ('vacancyId', 'timeslotId', 'isBooked')
 
 
 # Purchase
