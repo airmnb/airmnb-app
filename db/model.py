@@ -209,7 +209,7 @@ class Timeslot(Base):
 		return (self.start - self.TIME_ADVANCE) >= now
 	@property
 	def is_available(self):
-		return any([not v.is_booked for v in self.vacancies])
+		return any([not v.isBooked for v in self.vacancies])
 
 
 class TimeslotSchema(Schema):
