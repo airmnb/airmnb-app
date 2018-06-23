@@ -29,7 +29,6 @@ def get_all_purchased_activities():
 	return jsonify(activities=m.Activity.dump(activities))
 
 
-
 @bp.route(_name + '/<purchaseId>', methods=['GET'])
 @api
 @caps()
@@ -38,4 +37,3 @@ def get_purchase(purchaseId):
 	if not purchase:
 		raise InvalidUsage(_('purchase {0} not found').format(purchaseId), 404)
 	return jsonify(activity=m.Purchase.dump(purchase))
-

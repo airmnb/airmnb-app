@@ -237,11 +237,15 @@ class VacancySchema(Schema):
 # Purchase
 class Purchase(Base):
 	__table__ = t_purchases
+	activity = relationship('Activity')
+	vacancies = relationship('Vacancy')
+
 
 class PurchaseSchema(Schema):
-	activity = relationship('Activity')
+	acvitity = fields.Nested('Acvitity')
+	vacancies = fields.Nested('VacancySchema')
 	class Meta:
-		fields = ('purchaseId', 'providerId', 'bookedBy', 'activity')
+		fields = ('purchaseId', 'providerId', 'bookedBy', 'activity', 'vacancies')
 
 
 # Session

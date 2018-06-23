@@ -368,11 +368,17 @@ def make_purchase(activityId):
 				(check_timeslot_ids, (activityId,)),
 			]),
 	).get_data()
+	purchase = m.Purchase(
+		activityId=activityId,
+		providerId=activity.providerId,
+		bookedBy=g.current_user.userId,
+	)
 	vacancies = data['vacancies']
 	for v in vacancies:
-		SS.add(v)
+		purchase.vacancies.append(v)
+	SS.add(purchase)
 	SS.flush()
 	return jsonify(
-			vacancies=m.Vacancy.dump(vacancies)
+			purchase=m.Purchase.dump(purchase),
 		)
 
