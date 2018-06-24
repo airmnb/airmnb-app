@@ -4,7 +4,7 @@ alias migrate='python manage.py db migrate'
 alias upgrade='python manage.py db upgrade'
 alias downgrade='python manage.py db downgrade'
 alias m='python manage.py'
-alias start='python manage.py runserver'
+alias start='python manage.py runserver --threaded'
 alias apis='python manage.py list'
 alias build='pip install -r requirements.txt && \
 if cd web; then git pull; else git clone --depth 1 --progress -b master https://github.com/airmnb/airmnb-web.git web; fi && \

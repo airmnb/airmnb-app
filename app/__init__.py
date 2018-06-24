@@ -490,7 +490,7 @@ def create_app(config_name):
 	@app.route('/sys/signup', methods=['POST'])
 	def signup():
 		data = MyForm(
-			Field('accountName'),
+			Field('accountName', is_mandatory=True),
 			Field('password'),
 			Field('check', default=False),
 		).get_data()
