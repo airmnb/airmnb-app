@@ -231,8 +231,7 @@ class Vacancy(Base):
 
 class VacancySchema(Schema):
 	class Meta:
-		fields = ('vacancyId', 'activityId', 'timeslotId', 'bookedAt', 'purchaseId')
-
+		fields = ('vacancyId', 'isBooked', 'activityId', 'timeslotId', 'bookedAt', 'purchaseId')
 
 # Purchase
 class Purchase(Base):
@@ -242,8 +241,8 @@ class Purchase(Base):
 
 
 class PurchaseSchema(Schema):
-	acvitity = fields.Nested('Acvitity')
-	vacancies = fields.Nested('VacancySchema')
+	activity = fields.Nested('ActivitySchema')
+	vacancies = fields.Nested('VacancySchema', many=True)
 	class Meta:
 		fields = ('purchaseId', 'providerId', 'bookedBy', 'activity', 'vacancies')
 
