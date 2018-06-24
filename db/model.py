@@ -231,7 +231,7 @@ class Vacancy(Base):
 
 class VacancySchema(Schema):
 	class Meta:
-		fields = ('vacancyId', 'timeslotId', 'isBooked')
+		fields = ('vacancyId', 'activityId', 'timeslotId', 'bookedAt', 'purchaseId')
 
 
 # Purchase
