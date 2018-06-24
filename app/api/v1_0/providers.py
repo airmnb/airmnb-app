@@ -54,7 +54,7 @@ def update_provider(providerId):
 		Field('certificates')
 		)
 	if not provider:
-		user = m.User.query.get(userId)
+		user = m.User.query.get(providerId)
 		if not user:
 			raise InvalidUsage(_('provider {} not found').format(providerId), 404)
 		else:
