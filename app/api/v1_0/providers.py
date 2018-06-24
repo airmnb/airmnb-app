@@ -47,16 +47,22 @@ def get_provider(providerId):
 @caps()
 def update_provider():
 	provider = m.Provider.query.get(providerId)
-	if not provider:
-		raise InvalidUsage(_('provider {} not found').format(providerId), 404)
 	data = MyForm(
 		Field('info', is_mandatory=True, validators=[
 			validators.is_string,
 			]),
 		Field('certificates')
 		)
-	for k, v in data:
-		setattr(provider, k, v)
+	if not provider:
+		user = m.User.query.get(userId)
+		if not user:
+			raise InvalidUsage(_('provider {} not found').format(providerId), 404)
+		else:
+			provider = m.Provider(providerId=providerId, **data)
+			SS.add(provider)
+	else:
+		for k, v in data:
+			setattr(provider, k, v)
 	SS.flush()
 	return jsonify(
 		message=_('updated provider {} successfully').format(providerId),
