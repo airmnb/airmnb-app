@@ -53,6 +53,7 @@ def update_provider(providerId):
 			]),
 		Field('certificates')
 		).get_data()
+	data.pop('providerId')
 	if not provider:
 		user = m.User.query.get(providerId)
 		if not user:
