@@ -345,7 +345,7 @@ def check_timeslot_ids(data, key, timeslotIds, activityId):
 		vacancy = m.Vacancy.query.filter(
 			m.Vacancy.timeslotId==timeslotId).filter(
 			m.Vacancy.activityId==activityId).filter(
-			m.Vacancy.bookedBy.is_(None)).first()
+			m.Vacancy.purchaseId.is_(None)).first()
 		if not vacancy:
 			raise ValueError(_('timeslot {} has no more vacancies').format(timeslotId))
 		vacancy.bookedBy = g.current_user.userId
