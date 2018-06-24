@@ -52,7 +52,7 @@ def update_provider(providerId):
 			validators.is_string,
 			]),
 		Field('certificates')
-		)
+		).get_data()
 	if not provider:
 		user = m.User.query.get(providerId)
 		if not user:
