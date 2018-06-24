@@ -45,7 +45,7 @@ def get_provider(providerId):
 @bp.route(_name + '/<providerId>', methods=['PUT'])
 @api
 @caps()
-def update_provider():
+def update_provider(providerId):
 	provider = m.Provider.query.get(providerId)
 	data = MyForm(
 		Field('info', is_mandatory=True, validators=[
