@@ -25,8 +25,8 @@ def get_all_purchased_activities():
 	if is_closed:
 		status = 1
 	purchases = m.Purchase.query.filter(m.Purchase.bookedBy == user.userId).order_by(m.Purchase.createdAt.desc()).all()
-	activities = [p.activity for p in purchases]
-	return jsonify(activities=m.Activity.dump(activities))
+	# activities = [p.activity for p in purchases]
+	return jsonify(purchases=m.Purchase.dump(purchases))
 
 
 @bp.route(_name + '/<purchaseId>', methods=['GET'])
@@ -36,4 +36,4 @@ def get_purchase(purchaseId):
 	purchase = m.Purchase.query.get(purchaseId)
 	if not purchase:
 		raise InvalidUsage(_('purchase {0} not found').format(purchaseId), 404)
-	return jsonify(activity=m.Purchase.dump(purchase))
+	return jsonify(purchase=m.Purchase.dump(purchase))

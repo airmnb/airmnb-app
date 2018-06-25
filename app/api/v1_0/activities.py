@@ -1,5 +1,6 @@
 
 from flask import request, session, jsonify, g
+from sqlalchemy.sql import func
 
 import datetime
 from dateutil.tz import tzoffset
@@ -368,10 +369,17 @@ def make_purchase(activityId):
 				(check_timeslot_ids, (activityId,)),
 			]),
 	).get_data()
+	time_scope = db.session \
+		.query(func.min(m.Timeslot.start), func.max(m.Timeslot.end)) \
+		.filter(m.Timeslot.timeslotId.in_(data['timeslotIds'])) \
+		.one()
 	purchase = m.Purchase(
 		activityId=activityId,
 		providerId=activity.providerId,
 		bookedBy=g.current_user.userId,
+		bookedAt=datetime.datetime.now(),
+		startDate=time_scope[0],
+		endDate=time_scope[1],
 	)
 	vacancies = data['vacancies']
 	for v in vacancies:
