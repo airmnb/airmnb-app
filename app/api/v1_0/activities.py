@@ -377,8 +377,8 @@ def make_purchase(activityId):
 		activityId=activityId,
 		providerId=activity.providerId,
 		bookedBy=g.current_user.userId,
-		startDate=time_scope[0],
-		endDate=time_scope[1],
+		startDate=time_scope[0].strftime("%Y-%m-%d"),
+		endDate=time_scope[1].strftime("%Y-%m-%d"),
 	)
 	vacancies = data['vacancies']
 	for v in vacancies:
