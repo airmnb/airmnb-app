@@ -377,7 +377,6 @@ def make_purchase(activityId):
 		activityId=activityId,
 		providerId=activity.providerId,
 		bookedBy=g.current_user.userId,
-		bookedAt=datetime.datetime.now(),
 		startDate=time_scope[0],
 		endDate=time_scope[1],
 	)
