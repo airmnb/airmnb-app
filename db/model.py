@@ -238,7 +238,7 @@ class Purchase(Base):
 	__table__ = t_purchases
 	activity = relationship('Activity')
 	vacancies = relationship('Vacancy')
-	babies = relationship('Baby')
+	baby = relationship('Baby')
 
 
 class PurchaseSchema(Schema):
