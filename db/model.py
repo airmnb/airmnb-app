@@ -246,7 +246,7 @@ class PurchaseSchema(Schema):
 	vacancies = fields.Nested('VacancySchema', many=True)
 	baby = fields.Nested('BabySchema')
 	class Meta:
-		fields = ('purchaseId', 'providerId', 'startDate', 'endDate', 'bookedBy', 'activity', 'vacancies', 'baby')
+		fields = ('purchaseId', 'providerId', 'startDate', 'endDate', 'bookedBy', 'activity', 'vacancies', 'baby', 'status')
 
 
 # Session

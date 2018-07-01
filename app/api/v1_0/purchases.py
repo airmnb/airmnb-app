@@ -25,7 +25,11 @@ def get_all_purchased_activities():
 	status = 0
 	if is_closed:
 		status = 1
-	purchases = m.Purchase.query.filter(m.Purchase.bookedBy == user.userId).order_by(m.Purchase.createdAt.desc()).all()
+	purchases = m.Purchase.query \
+		.filter(m.Purchase.bookedBy == user.userId) \
+		.filter(m.Purchase.status == status) \
+		.order_by(m.Purchase.createdAt.desc()) \
+		.all()
 	# activities = [p.activity for p in purchases]
 	return jsonify(purchases=m.Purchase.dump(purchases))
 
@@ -100,6 +104,30 @@ def create_purchase():
 	vacancies = data['vacancies']
 	for v in vacancies:
 		purchase.vacancies.append(v)
+	SS.add(purchase)
+	SS.flush()
+	return jsonify(
+			purchase=m.Purchase.dump(purchase),
+		)
+
+
+# Generate a transaction. Provider confirms a purchase.
+@bp.route(_name + '/<purchaseId>', methods=['PUT'])
+@api
+@caps()
+def confirm_purchase(purchaseId):
+	purchase = m.Purchase.query.get(purchaseId)
+	if not purchase:
+		raise InvalidUsage(_('purchase {0} not found').format(purchaseId), 404)
+
+	if purchase.providerId != g.current_user.userId:
+		raise InvalidUsage(_('purchase {0} is not owned by the provider').format(purchaseId), 404)
+	# if purchase.activity.is_closed:
+	# 	raise InvalidUsage('The activity has been closed', 404)
+	if purchase.status == 1:
+		raise InvalidUsage(_('purchase {0} has been confirmed').format(purchaseId), 404)
+
+	purchase.status = 1
 	SS.add(purchase)
 	SS.flush()
 	return jsonify(
