@@ -20,8 +20,8 @@ def get_stat():
 	babyCount = m.Baby.query.count()
 	providerCount = m.Provider.query.count()
 	activityCount = m.Activity.query.count()
-	bookingCount = m.Vacancy.query.count()
-	transactionCount = bookingCount
+	bookingCount = m.Purchase.query.count()
+	transactionCount = m.Purchase.query.filter(m.Purchase.status == 1).count()
 	
 	return jsonify(stat=dict(
 		userCount=userCount, 
