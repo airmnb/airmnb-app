@@ -76,3 +76,15 @@ for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
 del os, glob
 
 ##########################################################################
+
+for schema_name in [i for i in __all__ if i.endswith('Schema')]:
+	klass_name = schema_name[:-6]
+	if klass_name.find('_') >= 0:
+		klass_name, schema_key = klass_name.split('_', 1)
+		schema_key = schema_key.lower()
+	else:
+		schema_key = ''
+	assert klass_name
+	klass = locals()[klass_name]
+	schema = locals()[schema_name]
+	klass.set_schema(schema, schema_key or None)
