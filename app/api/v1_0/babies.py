@@ -1,5 +1,5 @@
 
-from flask import request, session, jsonify
+from flask import request, session, jsonify, g
 
 import db.model as m
 from db.db import SS
