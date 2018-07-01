@@ -21,10 +21,11 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @caps()
 def get_all_purchased_activities():
 	user = g.current_user
-	is_closed = request.args.get('closed', 0)
+	is_closed = request.args.get('closed')
 	status = 0
-	if is_closed:
+	if is_closed is not None and int(is_closed) == 1:
 		status = 1
+	print('status', is_closed, status)
 	purchases = m.Purchase.query \
 		.filter(m.Purchase.bookedBy == user.userId) \
 		.filter(m.Purchase.status == status) \
@@ -71,6 +72,7 @@ def create_purchase():
 	data = MyForm(
 		Field('activityId', is_mandatory=True, validators=[helper.check_uuid_is_valid]),
 		Field('babyId', is_mandatory=True, validators=[helper.check_uuid_is_valid]),
+		Field('price', is_mandatory=False),
 		Field('timeslotIds', is_mandatory=True,
 			validators=[
 				(check_timeslot_ids,),
@@ -83,6 +85,8 @@ def create_purchase():
 		raise InvalidUsage(_('activity {} not found').format(activityId))
 	if not activity.isActive:
 		raise InvalidUsage(_('activity {} is not active').format(activityId))
+	if ('price' not in data) and (activity.price is not None):
+		data['price'] = activity.price
 
 	babyId = data['babyId']
 	baby = m.Baby.query.get(babyId)
