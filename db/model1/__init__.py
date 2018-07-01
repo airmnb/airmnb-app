@@ -49,20 +49,26 @@ Base.set_schema = classmethod(set_schema)
 Base.dump = classmethod(dump)
 
 
+_package_name = __name__
+
 _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
 
 __all__ = []
 
+
 for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
-	_basename = os.path.basename(_)
-	if _basename.startswith('_'):
+	_basename = os.path.basename(_)	# e.g. _std.py/activity.py/baby.py/provider.py
+	if _basename.startswith('_'):	# e.g. _std.py
 		continue
-	_mod_name = _basename.split('.')[0]
-	_mod = __name__ + '.' + _mod_name
-	_temp = __import__(_mod, globals(), locals(), ['*'], 0)
-	print(dir(_temp))
+	_mod_name = _basename.split('.')[0]	# activity/baby/
+	_mod = _package_name + '.' + _mod_name	# db.model1.activity
+	try:
+		_temp = __import__(_mod, globals(), locals(), ['*'], 0)
+	except:
+		print(dict(_baseame=_basename, _mod_name=_mod_name, _mod=_mod))
+		raise
 	for _name in dir(_temp):
 		locals()[_name] = getattr(_temp, _name)
 	__all__.append(_name)
@@ -70,5 +76,3 @@ for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
 del os, glob
 
 ##########################################################################
-
-print(__all__)
