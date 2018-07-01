@@ -102,6 +102,7 @@ def create_purchase():
 		providerId=activity.providerId,
 		babyId=babyId,
 		bookedBy=g.current_user.userId,
+		price=data['price'],
 		startDate=time_scope[0].strftime("%Y-%m-%d"),
 		endDate=time_scope[1].strftime("%Y-%m-%d"),
 	)
