@@ -16,12 +16,10 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 @api
 @caps()
 def get_babies():
-	creatorId = request.args.get('creatorId')
-	if creatorId:
-		babies = m.Baby.query.filter(m.Baby.creatorId == creatorId).order_by(m.Baby.createdAt).all()
-	else:
-		babies = m.Baby.query.order_by(m.Baby.createdAt).all()
+	creatorId = g.current_user.userId
+	babies = m.Baby.query.filter(m.Baby.creatorId == creatorId).order_by(m.Baby.createdAt).all()
 	return jsonify(babies=m.Baby.dump(babies))
+
 
 @bp.route(_name, methods=['POST'])
 @api
