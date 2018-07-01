@@ -1,6 +1,7 @@
 
 from flask import request, session, jsonify, g
 from sqlalchemy.sql import func
+from sqlalchemy import text
 
 import datetime
 from dateutil.tz import tzoffset
@@ -34,17 +35,28 @@ def get_map_activities():
 	center_longitude = request.args['clng']
 	radius_meters = request.args.get('radius', 2000)
 	limit = request.args.get('limit', 10)
-	user = g.current_user
-	activities = m.Activity.query \
+	category_spec = request.args.get('category', None)
+	
+	# search for Activities near by
+	q = m.Activity.query \
 		.filter(
-			db.func \
-			.earth_box(db.func.ll_to_earth(center_latitude, center_longitude), radius_meters) \
-    	.op('@>')(db.func.ll_to_earth(m.Venue.latitude, m.Venue.longitude)) \
-		) \
-		.order_by(m.Activity.name) \
-		.limit(limit) \
-		.all()
-	activities = [a for a in activities if a.isActive]
+			db.func.earth_box(
+				db.func.ll_to_earth(center_latitude, center_longitude),
+				radius_meters) \
+    		.op('@>')(db.func.ll_to_earth(m.Venue.latitude, m.Venue.longitude)))
+
+	# active only
+	q = q.filter(m.Activity.endDate >= text('current_date'))
+
+	# matches category
+	if category_spec:
+		q = q.filter(m.Activity.category.op('&')(category_spec) != 0)
+
+	# apply limit
+	if limit is not None:
+		q = q.order_by(m.Activity.name).limit(limit)
+
+	activities = q.all()
 	activityJsons = m.Activity.dump(activities)
 	return jsonify(activities=activityJsons)
 
