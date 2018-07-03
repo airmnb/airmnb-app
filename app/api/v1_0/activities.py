@@ -27,7 +27,7 @@ def get_activities():
 	return jsonify(activities=m.Activity.dump(activities))
 
 
-@bp.route(_name + '/map', methods=['GET'])
+@bp.route(_name + '/search', methods=['GET'])
 @api
 @caps()
 def get_map_activities():
