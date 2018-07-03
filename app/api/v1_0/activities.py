@@ -36,6 +36,14 @@ def get_map_activities():
 	radius_meters = request.args.get('radius', 2000)
 	limit = request.args.get('limit', 10)
 	category_spec = request.args.get('category', None)
+	start_date = request.args.get('sdate', None)
+	end_date = request.args.get('edate', None)
+	start_time = request.args.get('stime', None)
+	end_time = request.args.get('etime', None)
+	min_age = request.args.get('minage', None)
+	max_age = request.args.get('maxage', None)
+	gender = request.args.get('gender', 3)
+	days_of_week = request.args.get('dow', 127)
 	
 	# search for Activities near by
 	q = m.Activity.query \
