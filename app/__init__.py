@@ -113,6 +113,7 @@ def create_app(config_name):
 
 	@app.before_request
 	def authenticate_request():
+		print(request.url)
 		if request.method == 'OPTIONS': #and request.path == '/sys/whoami':
 			return make_response('', 200, {
 					'Accept': 'application/json',

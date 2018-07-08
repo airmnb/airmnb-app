@@ -55,8 +55,10 @@ _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
 
+print('setting __all__ to empty')
 __all__ = []
 
+##########################################################################
 
 for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
 	_basename = os.path.basename(_)	# e.g. _std.py/activity.py/baby.py/provider.py
@@ -73,11 +75,10 @@ for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
 		locals()[_name] = getattr(_temp, _name)
 	__all__.append(_name)
 
-del os, glob
-
 ##########################################################################
 
 for schema_name in [i for i in __all__ if i.endswith('Schema')]:
+	print('schema %s' % schema_name)
 	klass_name = schema_name[:-6]
 	if klass_name.find('_') >= 0:
 		klass_name, schema_key = klass_name.split('_', 1)

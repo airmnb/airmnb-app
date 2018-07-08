@@ -1,5 +1,7 @@
 
 import mimetypes
+from base64 import b64decode
+import re
 
 from flask import request, session, jsonify, g
 import psycopg2
@@ -32,3 +34,25 @@ def create_new_image():
 	SS.add(image)
 	SS.flush()
 	return jsonify(image=m.Image.dump(image))
+
+def normalize_b64_str(data, key, literal):
+	m = re.match('data:[^/]*/[^/]*;base64,', literal)
+	if m:
+		literal = literal[m.end():]
+	decoded = b64decode(bytearray(literal, 'utf-8'))
+	return decoded
+
+@bp.route(_name + '_base64', methods=['POST'])
+@api
+@caps()
+def create_new_image_as_base64():
+	data = MyForm(
+		Field('data', is_mandatory=True,
+			normalizer=normalize_b64_str,
+		)
+	).get_data()
+	image = m.Image(blob=data['data'], mimeType=None)
+	SS.add(image)
+	SS.flush()
+	return jsonify(image=m.Image.dump(image))
+
