@@ -44,6 +44,7 @@ def get_map_activities():
 	max_age = request.args.get('maxage', None)
 	gender = request.args.get('gender', 3)
 	days_of_week = request.args.get('dow', 127)
+	status = request.args.get('status', 0)
 	
 	# search for Activities near by
 	q = m.Activity.query \
