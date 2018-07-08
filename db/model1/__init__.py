@@ -55,30 +55,33 @@ _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
 
-print('setting __all__ to empty')
-__all__ = []
+_imported_names = set()
 
 ##########################################################################
 
 for _ in glob.glob(os.path.join(os.path.dirname(__file__), '*.py')):
 	_basename = os.path.basename(_)	# e.g. _std.py/activity.py/baby.py/provider.py
 	if _basename.startswith('_'):	# e.g. _std.py
-		continue
-	_mod_name = _basename.split('.')[0]	# activity/baby/
-	_mod = _package_name + '.' + _mod_name	# db.model1.activity
-	try:
-		_temp = __import__(_mod, globals(), locals(), ['*'], 0)
-	except:
-		print(dict(_baseame=_basename, _mod_name=_mod_name, _mod=_mod))
-		raise
-	for _name in dir(_temp):
-		locals()[_name] = getattr(_temp, _name)
-	__all__.append(_name)
+		pass
+	else:
+		_mod_name = _basename.split('.')[0]	# activity/baby/
+		_mod = _package_name + '.' + _mod_name	# db.model1.activity
+		new_local = {}
+		try:
+			_temp = __import__(_mod, globals(), locals(), ['*'], 0)
+		except:
+			print(dict(_baseame=_basename, _mod_name=_mod_name, _mod=_mod))
+			raise
+		for _name in dir(_temp):
+			locals()[_name] = getattr(_temp, _name)
+			_imported_names.add(_name)
 
 ##########################################################################
 
-for schema_name in [i for i in __all__ if i.endswith('Schema')]:
-	print('schema %s' % schema_name)
+__all__ = list(_imported_names)
+
+
+for schema_name in [i for i in __all__ if i.endswith('Schema') and i != 'Schema']:
 	klass_name = schema_name[:-6]
 	if klass_name.find('_') >= 0:
 		klass_name, schema_key = klass_name.split('_', 1)

@@ -5,7 +5,6 @@ _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
 
-
 # Timeslot
 class Timeslot(Base):
 	__table__ = t_timeslots

@@ -5,7 +5,6 @@ _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
 
-
 # Venue
 class Venue(Base):
 	__table__ = t_venues

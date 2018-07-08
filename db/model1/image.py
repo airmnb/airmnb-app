@@ -5,7 +5,6 @@ _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
 
-
 # Image
 class Image(Base):
 	__table__ = t_images
