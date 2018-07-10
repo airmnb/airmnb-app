@@ -1,6 +1,8 @@
 
 from ._std import *
 
+from .tag import Tag
+
 _names = set(locals().keys()) | {'_names'}
 
 ##########################################################################
