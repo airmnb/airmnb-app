@@ -17,7 +17,7 @@ _name = '/' + __file__.split('/')[-1].split('.')[0]
 def load_json_i18n_file(lang):
 	site_root = os.path.realpath(os.path.dirname(__file__))
 	json_url = os.path.join(site_root, 'i18n', lang + '.json')
-	data = json.load(open(json_url))
+	data = json.load(open(json_url, encoding='utf-8'))
 	return data
 
 supported_langs = {
