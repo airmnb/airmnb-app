@@ -31,22 +31,29 @@ def get_activities():
 @api
 @caps()
 def get_map_activities():
+
 	center_latitude = request.args['clat']
 	center_longitude = request.args['clng']
 	radius_meters = request.args.get('radius', 2000)
+
 	limit = request.args.get('limit', 10)
+	
 	category_spec = request.args.get('category', None)
+	
 	start_date = request.args.get('sdate', None)
 	end_date = request.args.get('edate', None)
 	start_time = request.args.get('stime', None)
 	end_time = request.args.get('etime', None)
+
 	min_age = request.args.get('minage', None)
 	max_age = request.args.get('maxage', None)
 	gender = request.args.get('gender', 3)
+	
 	days_of_week = request.args.get('dow', 127)
+	
 	status = request.args.get('status', 0)
 	
-	# search for Activities near by
+	# search for Activities by geo-info
 	q = m.Activity.query \
 		.filter(
 			db.func.earth_box(
@@ -57,9 +64,27 @@ def get_map_activities():
 	# active only
 	q = q.filter(m.Activity.endDate >= text('current_date'))
 
+	if start_date:
+		q = q.filter(m.Activity.startDate >= start_date)
+
+	if end_date:
+		q = q.filter(m.Activity.endDate <= end_date)
+
 	# matches category
 	if category_spec:
 		q = q.filter(m.Activity.category.op('&')(category_spec) != 0)
+
+	if gender != None:
+		q = q.filter(m.Activity.gender == gender)
+
+	if max_age != None:
+		q = q.filter(m.Activity.max_age <= max_age)
+
+	if min_age != None:
+		q = q.filter(m.Activity.min_age >= min_age)
+
+	if status != 0:
+		q = q.filter(m.Activity.status == status)
 
 	# apply limit
 	if limit is not None:
