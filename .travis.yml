@@ -10,8 +10,7 @@ addons:
 services:
 - postgresql
 before_install:
-- openssl aes-256-cbc -K $encrypted_dae10395fed2_key -iv $encrypted_dae10395fed2_iv
-  -in travis-ci/setenv.sh.enc -out travis-ci/setenv.sh -d
+- openssl aes-256-cbc -K $encrypted_ae75a86fb024_key -iv $encrypted_ae75a86fb024_iv -in travis-ci/setenv.sh.enc -out ./travis-ci/setenv.sh -d
 - sudo apt-get -qq update
 install:
 - pip install -r requirements.txt
