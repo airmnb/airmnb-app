@@ -50,6 +50,7 @@ def get_map_activities():
 	days_of_week = request.args.get('daysOfWeek', 127)
 	if days_of_week == '0':
 		days_of_week = 127
+	free_only = request.args.get('freeOnly', None)
 
 	# Not used for the first version
 	min_age = request.args.get('minage', None)
@@ -94,6 +95,9 @@ def get_map_activities():
 
 	if status != 0:
 		q = q.filter(m.Activity.status == status)
+
+	if free_only == 'true' or free_only == 1:
+			q = q.filter(m.Activity.price == 0)
 
 	# apply limit
 	if limit is not None:
