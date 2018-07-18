@@ -1,0 +1,29 @@
+language: python
+python:
+- '3.6'
+branches:
+  only:
+  - master
+env: 
+addons:
+  postgresql: '9.6'
+services:
+- postgresql
+before_install:
+- openssl aes-256-cbc -K $encrypted_dae10395fed2_key -iv $encrypted_dae10395fed2_iv
+  -in travis-ci/setenv.sh.enc -out travis-ci/setenv.sh -d
+- sudo apt-get -qq update
+install:
+- pip install -r requirements.txt
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install |
+  bash
+before_script:
+- export BOTO_CONFIG=/dev/null
+- "./travis-ci/createdb.sh"
+- source ./travis-ci/setenv.sh
+- python manage.py db upgrade
+- "./travis-ci/load_data.sh"
+script:
+- notetests
+after_script:
+- "./travis-ci/pre_build.sh"
