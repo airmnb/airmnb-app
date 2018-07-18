@@ -37,19 +37,24 @@ def get_map_activities():
 	radius_meters = request.args.get('radius', 2000)
 
 	limit = request.args.get('limit', 10)
+	keywords = request.args.get('key', None)
 	
 	category_spec = request.args.get('category', None)
+	if category_spec == '0':
+		category_spec = None
 	
-	start_date = request.args.get('sdate', None)
-	end_date = request.args.get('edate', None)
-	start_time = request.args.get('stime', None)
-	end_time = request.args.get('etime', None)
+	start_date = request.args.get('startdate', None)
+	end_date = request.args.get('enddate', None)
+	start_time = request.args.get('starttime', None)
+	end_time = request.args.get('endtime', None)
+	days_of_week = request.args.get('daysOfWeek', 127)
+	if days_of_week == '0':
+		days_of_week = 127
 
+	# Not used for the first version
 	min_age = request.args.get('minage', None)
 	max_age = request.args.get('maxage', None)
 	gender = request.args.get('gender', 3)
-	
-	days_of_week = request.args.get('dow', 127)
 	
 	status = request.args.get('status', 0)
 	
@@ -63,6 +68,10 @@ def get_map_activities():
 
 	# active only
 	q = q.filter(m.Activity.endDate >= text('current_date'))
+
+	if keywords:
+		keys = keywords.split()
+		# TODO: Query the ones containing keys from Activity.name or Activity.info
 
 	if start_date:
 		q = q.filter(m.Activity.startDate >= start_date)
