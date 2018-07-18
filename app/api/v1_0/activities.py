@@ -37,7 +37,7 @@ def get_map_activities():
 	radius_meters = request.args.get('radius', 2000)
 
 	limit = request.args.get('limit', 10)
-	keywords = request.args.get('key', None)
+	keywords = request.args.get('keywords', None)
 	
 	category_spec = request.args.get('category', None)
 	if category_spec == '0':
