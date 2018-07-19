@@ -328,6 +328,8 @@ def create_app(config_name):
 	def debug():
 		buf = []
 		for k, v in sorted(os.environ.items()):
+			if k == 'AMB_DATABASE_URI':
+				v = re.sub('(?<=//)[^@]+@','***:***', v)
 			buf.append('{}\t{}\n'.format(k, v))
 		return make_response('\n'.join(buf), 200, {'Content-Type': 'text/plain'})
 
