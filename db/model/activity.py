@@ -59,24 +59,24 @@ class ActivityTag(Base):
 	__table__ = t_activity_tags
 
 
-# ActivityReview
-class ActivityReview(Base):
-	__table__ = t_activity_reviews
+# # ActivityReview
+# class ActivityReview(Base):
+# 	__table__ = t_activity_reviews
 
 
-class ActivityReviewSchema(Schema):
-	class Meta:
-		fields = ('reviewId', 'activityId', 'reviewerId', 'stars', 'content', 'createdAt')
+# class ActivityReviewSchema(Schema):
+# 	class Meta:
+# 		fields = ('reviewId', 'activityId', 'reviewerId', 'stars', 'content', 'createdAt')
 	
 
-# ActivityResponse
-class ActivityResponse(Base):
-	__table__ = t_activity_responses
+# # ActivityResponse
+# class ActivityResponse(Base):
+# 	__table__ = t_activity_responses
 
 
-class ActivityResponseSchema(Schema):
-	class Meta:
-		fields = ('responseId', 'reviewId', 'activityId', 'providerId', 'content', 'createdAt')
+# class ActivityResponseSchema(Schema):
+# 	class Meta:
+# 		fields = ('responseId', 'reviewId', 'activityId', 'providerId', 'content', 'createdAt')
 
 
 ##########################################################################

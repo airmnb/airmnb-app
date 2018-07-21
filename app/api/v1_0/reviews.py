@@ -15,6 +15,46 @@ from . import _helper as helper
 _name = '/' + __file__.split('/')[-1].split('.')[0]
 
 
+@bp.route(_name + '/activity/<activityId>', methods=['GET'])
+def get_activity_reviews(activityId):
+	activity = m.Activity.query.get(activityId)
+	if not activity:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+	reviews = m.ActivityReview.query.filter(
+		m.ActivityReview.activityId==activityId).order_by(
+		m.ActivityReview.reviewId).all()
+	return jsonify(
+		reviews=m.ActivityReview.dump(reviews))
+
+
+@bp.route(_name, methods=['POST'])
+@api
+@caps()
+def create_review():
+	data = MyForm(
+		Field('activityId', is_mandatory=True, default=None),
+		Field('reviewerId', is_mandatory=True, default=lambda: g.current_user.userId),
+		Field('stars', is_mandatory=True, validators=[
+			(validators.is_number, (), dict(min_value=0, max_value=5)),
+			]),
+		Field('content'),
+		).get_data()
+
+	activityId = data['activityId']
+	activity = m.Activity.query.get(activityId)
+	if not activity:
+		raise InvalidUsage(_('activity {} not found').format(activityId))
+	#
+	# TODO: check if user (userId) is a consumer of activity (activityId)
+	#
+	review = m.ActivityReview(**data)
+	SS.add(review)
+	SS.flush()
+	return jsonify(message=_('successfully created review {}').format(review.reviewId),
+		review=m.ActivityReview.dump(review),
+		)
+
+
 @bp.route(_name + '/<reviewId>/responses/', methods=['POST'])
 @api
 @caps()
@@ -39,3 +79,4 @@ def create_review_response(reviewId):
 		message=_('successfully created response {}').format(resp.responseId),
 		response=m.ActivityResponse.dump(resp),
 	)
+

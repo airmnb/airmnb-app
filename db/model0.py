@@ -174,8 +174,9 @@ class ActivityReview(Base):
 
 
 class ActivityReviewSchema(Schema):
+	reviewer = fields.Nested('UserSchema')
 	class Meta:
-		fields = ('reviewId', 'activityId', 'reviewerId', 'stars', 'content', 'createdAt')
+		fields = ('reviewId', 'activityId', 'reviewer', 'stars', 'content', 'createdAt')
 	
 
 # ActivityResponse
