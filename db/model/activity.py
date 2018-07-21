@@ -14,6 +14,7 @@ class Activity(Base):
 	provider = relationship('User')
 	images = relationship('ActivityImage')
 	timeslots = relationship('Timeslot')
+	reviews = relationship('ActivityReview')
 	@property
 	def isActive(self):
 		return self.endDate >= datetime.datetime.now().date()
@@ -48,6 +49,7 @@ class ActivitySchema(Schema):
 # ActivityImage
 class ActivityImage(Base):
 	__table__ = t_activity_images
+
 
 class ActivityImageSchema(Schema):
 	class Meta:

@@ -180,6 +180,11 @@ def check_image_ids(data, key, imageIds):
 def get_time_with_tz(time, offset_mins):
 	return time.replace(tzinfo=tzoffset(None, int(offset_mins)))
 
+def check_end_date(data, key, endDate):
+	startDate = data.get('startDate', None)
+	if startDate is not None and endDate < startDate:
+		raise ValueError(_('endDate must be no later than startDate'))
+
 @bp.route(_name, methods=['POST'])
 @api
 @caps()
@@ -214,6 +219,9 @@ def create_new_activity():
 			),
 		Field('endDate', is_mandatory=False,
 			normalizer=helper.normalize_date,
+			validators=[
+				check_end_date,
+			]
 			),
 		Field('startTime', is_mandatory=True,
 			# normalizer=helper.normalize_time,

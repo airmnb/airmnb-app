@@ -10,13 +10,17 @@ _names = set(locals().keys()) | {'_names'}
 # Review
 class ActivityReview(Base):
 	__table__ = t_activity_reviews
+	reviewer = relationship('User')
 
 
 class ActivityReviewSchema(Schema):
 	reviewer = fields.Nested('UserSchema')
+	reviewerName = fields.Method('get_reviewer_name')
+	def get_reviewer_name(self, obj):
+		return obj.fullName
 	class Meta:
-		fields = ('reviewId', 'activityId', 'reviewer', 'stars', 'content', 'createdAt')
-	
+		fields = ('reviewId', 'activityId', 'reviewerName', 'stars', 'content', 'createdAt')
+
 
 # ActivityResponse
 class ActivityResponse(Base):

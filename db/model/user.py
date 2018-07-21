@@ -18,6 +18,10 @@ class UserSchema(Schema):
 			'gender', 'dob', 'lastAccessAt', 'createdAt')
 		exclude = ('password', 'salt')
 
+class User_SimpleSchema(Schema):
+	class Meta:
+		fields = ('userId', 'fullName')
+
 ##########################################################################
 
 __all__ = list(set(locals().keys()) - _names)
