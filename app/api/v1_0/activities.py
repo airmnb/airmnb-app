@@ -1,7 +1,7 @@
 
 from flask import request, session, jsonify, g
 from sqlalchemy.sql import func
-from sqlalchemy import text
+from sqlalchemy import text, or_
 
 import datetime
 from dateutil.tz import tzoffset
@@ -37,7 +37,8 @@ def get_map_activities():
 	radius_meters = request.args.get('radius', 2000)
 
 	limit = request.args.get('limit', 10)
-	keywords = request.args.get('keywords', None)
+	keywords = request.args.get('keywords', '')
+	keywords = list([kw.upper() for kw in keywords.split()])
 	
 	category_spec = request.args.get('category', None)
 	if category_spec == '0':
@@ -58,7 +59,8 @@ def get_map_activities():
 	gender = request.args.get('gender', 3)
 	
 	status = request.args.get('status', 0)
-	
+
+
 	# search for Activities by geo-info
 	q = m.Activity.query \
 		.filter(
@@ -71,8 +73,13 @@ def get_map_activities():
 	q = q.filter(m.Activity.endDate >= text('current_date'))
 
 	if keywords:
-		keys = keywords.split()
-		# TODO: Query the ones containing keys from Activity.name or Activity.info
+		q = q.filter(or_(
+			db.func.regexp_split_to_array(
+				db.func.upper(m.Activity.name), r'\s'
+				).op('&&')(keywords),
+			db.func.regexp_split_to_array(
+				db.func.upper(m.Activity.info), r'\s'
+				).op('&&')(keywords)))
 
 	if start_date:
 		q = q.filter(m.Activity.startDate >= start_date)

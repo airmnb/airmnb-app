@@ -23,6 +23,6 @@ before_script:
 - python manage.py db upgrade
 - "./travis-ci/load_data.sh"
 script:
-- notetests
+- nosetests
 after_script:
 - "./travis-ci/pre_build.sh"
