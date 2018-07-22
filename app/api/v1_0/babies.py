@@ -1,3 +1,4 @@
+import os
 
 from flask import request, session, jsonify, g
 
@@ -9,7 +10,7 @@ from . import api_1_0 as bp, InvalidUsage
 
 from . import _helper as helper
 
-_name = '/' + __file__.split('/')[-1].split('.')[0]
+_name = '/' + __file__.split(os.sep)[-1].split('.')[0]
 
 
 @bp.route(_name, methods=['GET'])
