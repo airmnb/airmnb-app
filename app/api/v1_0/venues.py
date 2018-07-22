@@ -1,3 +1,4 @@
+import os
 
 from flask import request, session, jsonify
 
@@ -9,7 +10,7 @@ from . import api_1_0 as bp, InvalidUsage
 
 from . import _helper as helper
 
-_name = '/' + __file__.split('/')[-1].split('.')[0]
+_name = '/' + __file__.split(os.sep)[-1].split('.')[0]
 
 def check_uuid_availability(data, key, venueId):
 	if m.Venue.query.get(venueId):
