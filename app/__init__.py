@@ -17,6 +17,7 @@ from flask_oauthlib.client import OAuth
 from flask_cors import CORS
 import requests
 import jwt
+from flask import current_app
 
 from config import config
 from db import database as db
@@ -555,9 +556,16 @@ def create_app(config_name):
 	@app.route('/', defaults={'path': ''})
 	@app.route('/<path:path>')
 	def catch_all(path):
+
 		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')) or request.path.startswith('/public/'):
 			# return send_file('index.html', cache_timeout=0)
-			return redirect(location="http://localhost:3000")
+			# If AMB_RUNTIME_ENVIRONMENT == 'production'
+			# The redirect URL will be 'https://<AMB_DOMAIN_NAME>'
+			#
+			# If AMB_RUNTIME_ENVIRONMENT == 'development'
+			# The redirect URL will be 'http://localhost:3000'
+			redirect_url = current_app.config.get('AMB_HOME_REDIRECT_URL')
+			return redirect(location=redirect_url)
 		return make_response('Not found', 404)
 
 	return app
