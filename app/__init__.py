@@ -337,7 +337,8 @@ def create_app(config_name):
 
 	@app.route('/sys/health_check')
 	def health_check():
-		return make_response('OK', 200, {'Content-Type': 'text/plain'})
+		return make_response('OK', 200,
+		{'Content-Type': 'text/plain'})
 
 
 	@app.route('/sys/login/weapp')
@@ -558,14 +559,14 @@ def create_app(config_name):
 	def catch_all(path):
 
 		if not (request.path.startswith('/sys/') or request.path.startswith('/api/')) or request.path.startswith('/public/'):
-			# return send_file('index.html', cache_timeout=0)
+			return send_file('index.html', cache_timeout=0)
 			# If AMB_RUNTIME_ENVIRONMENT == 'production'
 			# The redirect URL will be 'https://<AMB_DOMAIN_NAME>'
 			#
 			# If AMB_RUNTIME_ENVIRONMENT == 'development'
 			# The redirect URL will be 'http://localhost:3000'
-			redirect_url = current_app.config.get('AMB_HOME_REDIRECT_URL')
-			return redirect(location=redirect_url)
+			# redirect_url = current_app.config.get('AMB_HOME_REDIRECT_URL')
+			# return redirect(location=redirect_url)
 		return make_response('Not found', 404)
 
 	return app
