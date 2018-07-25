@@ -23,7 +23,7 @@ def get_activity_reviews(activityId):
 		raise InvalidUsage(_('activity {} not found').format(activityId))
 	reviews = m.ActivityReview.query.filter(
 		m.ActivityReview.activityId==activityId).order_by(
-		m.ActivityReview.reviewId).all()
+		m.ActivityReview.createdAt.desc()).all()
 	return jsonify(
 		reviews=m.ActivityReview.dump(reviews))
 
