@@ -43,7 +43,7 @@ class ActivitySchema(Schema):
 		fields = ('activityId', 'name', 'info', 'category', 'minAge', 'maxAge',
 			'daysOfWeek', 'capacity', 'gender', 'daysOfWeek',
 			'startDate', 'startTime', 'endDate', 'endTime',
-			'venue', 'price', 'tags', 'imageIds', 'status')
+			'venue', 'price', 'tags', 'imageIds', 'status', 'providerId')
 
 
 # ActivityImage
