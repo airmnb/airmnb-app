@@ -78,12 +78,12 @@ def create_app(config_name):
 		'/sys/authorization_response$',
 		'/sys/health_check$',
 		'/$',
+
 	]))
 	json_url_patterns = list(map(re.compile, [
 		'/sys/whoami$',
 		'/api/'
 	]))
-
 
 	from app.api import api_1_0
 	app.register_blueprint(api_1_0, url_prefix='/api/1.0')
@@ -114,7 +114,11 @@ def create_app(config_name):
 
 	@app.before_request
 	def authenticate_request():
-		print(request.url)
+		#
+		# all OPTIONS reqeusts should be public
+		# see also: https://www.w3.org/TR/cors/#preflight-request
+		# see also: https://stackoverflow.com/questions/40722700/add-authentication-to-options-request
+		#
 		if request.method == 'OPTIONS': #and request.path == '/sys/whoami':
 			return make_response('', 200, {
 					'Accept': 'application/json',
@@ -123,8 +127,10 @@ def create_app(config_name):
 					'Access-Control-Allow-Headers': 'Authorization,X-Requested-With,Content-Type,Accept,Origin',
 				})
 
+		#
+		# this should only be used for development server
+		#
 		if os.environ.get('AMB_DEBUG_HEADER'):
-			print('found AMB_DEBUG_HEADER, do further checking')
 			if 'AMB_DEBUG_HEADER' in request.headers:
 				userId = request.headers['AMB_DEBUG_HEADER']
 				if userId == os.environ['AMB_DEBUG_HEADER']:
@@ -133,11 +139,17 @@ def create_app(config_name):
 						g.current_user = user
 						return None 
 
+		#
+		# skip auth check for all public urls
+		#
 		for i, p in enumerate(public_url_patterns):
 			if p.match(request.path):
 				return None
 
 		try:
+			#
+			# first, check 'authorization' header
+			#
 			if 'authorization' not in request.headers:
 				raise RuntimeError('Authorization header not found for non-public url: {}'.format(request.path))
 			auth_header = request.headers['authorization']
@@ -199,7 +211,18 @@ def create_app(config_name):
 				sessionToken = jwt.encode(payload, os.environ.get('SECRET') or '').decode('utf-8')
 				return make_response(jsonify(sessionToken=sessionToken, sessionId=ses.sessionId),
 					401, {'Content-Type': 'application/json'})
+			else:
+				#
+				# instead of returning a '401 Not Authorized' error, assume user is guest
+				#
+				user = m.User(userId=None, accountName='guest')
+				g.current_user = user
+				g.sessionId = None
+				return None
 
+		#
+		# authentication failed, response will be determined by requested MIME type
+		#
 		is_json = False
 		for p in json_url_patterns:
 			if p.match(request.path):
@@ -208,9 +231,16 @@ def create_app(config_name):
 		else:
 			is_json = (request.headers.get('HTTP-ACCEPT') or '').find('application/json') >= 0
 
+		#
+		# if requested response if JSON, return error message
+		#
 		if is_json:
 			return make_response(jsonify(error='authentication required to access requested url'), 
 				401, {'Content-Type': 'application/json'})
+
+		#
+		# otherwise assumes user is requesting html, fallback to index.html to handle login
+		#
 		return redirect(location='/#/login')
 
 
@@ -337,8 +367,10 @@ def create_app(config_name):
 
 	@app.route('/sys/health_check')
 	def health_check():
-		return make_response('OK', 200,
-		{'Content-Type': 'text/plain'})
+		'''
+		Simply returns 200 OK to indicate server is healthy
+		'''
+		return make_response('OK', 200, {'Content-Type': 'text/plain'})
 
 
 	@app.route('/sys/login/weapp')
